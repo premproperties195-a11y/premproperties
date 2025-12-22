@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Ultra-Clean Palette */
+  --background: #FFFFFF;
+  /* Pure White */
+  --foreground: #1A1A1A;
+  /* Sharp Black for text */
+  --secondary-bg: #F9F9F9;
+  /* Very Light Beige/Grey for sections */
+
+  /* Brand Accent */
+  --primary: #FFA600;
+  /* Vibrant Orange-Yellow from Logo/Image */
+  --primary-light: #FFB733;
+  --primary-dark: #CC8500;
+
+  --border-color: #E5E5E5;
+  /* Subtle borders */
+
+  /* Font Families */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-[var(--foreground)];
+    font-family: var(--font-sans);
+    /* Sticking to clean Sans mostly */
+  }
+
+  /* Optional: Use Serif only for specific elegant headings */
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-[var(--primary)] text-white font-bold uppercase tracking-wider rounded-sm hover:bg-[var(--primary-dark)] transition-all duration-300 shadow-md hover:shadow-lg;
+  }
+
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-[var(--foreground)] text-[var(--foreground)] font-bold uppercase tracking-wider rounded-sm hover:bg-[var(--foreground)] hover:text-white transition-all duration-300;
+  }
+
+  .glass-header {
+    @apply bg-white/95 backdrop-blur-sm border-b border-[var(--border-color)] shadow-sm;
+  }
+
+  .section-padding {
+    @apply py-20 px-6;
+  }
+
+  .card-hover {
+    @apply transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl;
+  }
+}
+
+/* Swiper Customization for Light Theme */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply w-12 h-12 bg-white text-[var(--primary)] rounded-full shadow-lg transition-all duration-300;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 1.2rem !important;
+  font-weight: bold;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  @apply bg-[var(--primary)] text-white;
+}
+
+.swiper-pagination-bullet-active {
+  @apply bg-[var(--primary)] w-8 rounded-full opacity-100;
+}
+
+html {
+  scroll-behavior: smooth;
+}

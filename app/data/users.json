@@ -1,0 +1,25 @@
+[
+  {
+    "id": "master-admin-001",
+    "username": "Super Admin",
+    "email": "admin@prem.com",
+    "password": "admin123",
+    "role": "super_admin",
+    "permissions": [
+      "all"
+    ],
+    "createdAt": "2025-12-20T22:42:36Z"
+  },
+  {
+    "username": "sridhar",
+    "email": "sridharuduthala@gmail.com",
+    "password": "admin123",
+    "role": "sub_admin",
+    "permissions": [
+      "Properties",
+      "Content"
+    ],
+    "id": "1766253628810",
+    "createdAt": "2025-12-20T18:00:28.810Z"
+  }
+]
