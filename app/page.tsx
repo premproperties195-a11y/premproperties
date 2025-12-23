@@ -13,9 +13,9 @@ export async function generateMetadata() {
   const seo = companyData?.seo || {};
 
   return {
-    title: seo.defaultTitle || "PREM Properties | Real Estate in Kongara Kalan, Hyderabad",
-    description: seo.defaultDescription || "Invest in Kongara Kalan, Hyderabad's fastest-growing industrial hub. Near Foxconn, Hardware Park, Amazon Data Centre, and Ranga Reddy IDOC. Strategic location near ORR Exit 13.",
-    keywords: seo.keywords || "Kongara Kalan Real Estate, Foxconn Hyderabad, ORR Exit 13 Plots, Hardware Park, Ranga Reddy IDOC, Real Estate Investment Hyderabad, Gold Refinery Kongara Kalan",
+    title: seo.defaultTitle || "PREM Properties | Real Estate in Kongara Kalan & Ibrahimpatnam, Hyderabad",
+    description: seo.defaultDescription || "Premium plots in Ibrahimpatnam, Rangareddy, and Kongara Kalan. Near Future City, Foxconn, and ORR Exit 13. High-growth real estate investments in Hyderabad.",
+    keywords: seo.keywords || "Ibrahimpatnam plots, Rangareddy plots, Future City plots, Kongara Kalan Real Estate, Foxconn Hyderabad, ORR Exit 13 Plots, Real Estate Investment Hyderabad",
   };
 }
 
@@ -42,7 +42,7 @@ export default async function Home() {
             "@context": "https://schema.org",
             "@type": "RealEstateAgent",
             "name": "PREM Properties",
-            "description": "Premium real estate in Kongara Kalan, Hyderabad. Near Foxconn, Hardware Park, and ORR Exit 13.",
+            "description": "Premium real estate and plots in Ibrahimpatnam, Rangareddy, and Kongara Kalan. Near Future City and ORR Exit 13.",
             "url": "https://premproperties.com",
             "telephone": "+91 888 557 5557",
             "address": {
