@@ -25,8 +25,12 @@ export default function SettingsAdmin() {
             secondaryColor: "#1A1A1A",
             fontSans: "Inter",
             fontSerif: "Playfair Display",
+<<<<<<< HEAD
             logoHeight: "80",
             logo: "/logo.png"
+=======
+            logoHeight: "80"
+>>>>>>> 5355a49 (first commit)
         },
         seo: {
             defaultTitle: "",
@@ -437,6 +441,7 @@ export default function SettingsAdmin() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         />
                                     </div>
+<<<<<<< HEAD
                                     <div>
                                         <label className="block text-sm font-bold text-gray-600 mb-2">Website Logo</label>
                                         <div className="flex gap-4 items-center">
@@ -462,6 +467,8 @@ export default function SettingsAdmin() {
                                             </div>
                                         </div>
                                     </div>
+=======
+>>>>>>> 5355a49 (first commit)
                                 </div>
                             </div>
                         </div>

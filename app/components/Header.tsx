@@ -3,12 +3,17 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+<<<<<<< HEAD
 import { fetchCompanyData } from "../lib/data";
+=======
+import companyData from "../data/company.json";
+>>>>>>> 5355a49 (first commit)
 
 export default function Header({ nav }: { nav?: any[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [member, setMember] = useState<any>(null);
+<<<<<<< HEAD
   const [company, setCompany] = useState<any>(null);
 
   useEffect(() => {
@@ -18,6 +23,10 @@ export default function Header({ nav }: { nav?: any[] }) {
     };
     loadData();
 
+=======
+
+  useEffect(() => {
+>>>>>>> 5355a49 (first commit)
     const fetchMember = async () => {
       try {
         const res = await fetch("/api/member/session");
@@ -41,7 +50,11 @@ export default function Header({ nav }: { nav?: any[] }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+<<<<<<< HEAD
   const navLinks = nav || company?.navigation || [
+=======
+  const navLinks = nav || companyData.navigation || [
+>>>>>>> 5355a49 (first commit)
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Properties", href: "/properties" },
@@ -49,9 +62,12 @@ export default function Header({ nav }: { nav?: any[] }) {
     { label: "Contact", href: "/contact" },
   ];
 
+<<<<<<< HEAD
   const logoUrl = company?.appearance?.logo || "/logo.png";
   const logoHeight = company?.appearance?.logoHeight || "80";
 
+=======
+>>>>>>> 5355a49 (first commit)
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white py-4 shadow-sm" : "bg-transparent py-6"
@@ -61,10 +77,16 @@ export default function Header({ nav }: { nav?: any[] }) {
         {/* LOGO */}
         <Link href="/" className="group relative z-50">
           <img
+<<<<<<< HEAD
             src={logoUrl}
             alt={company?.company?.name || "PREM Properties"}
             style={{ height: `${logoHeight}px` }}
             className="w-auto object-contain"
+=======
+            src="/logo.png"
+            alt="PREM Properties"
+            className="h-20 w-auto object-contain"
+>>>>>>> 5355a49 (first commit)
           />
         </Link>
 
