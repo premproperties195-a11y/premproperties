@@ -14,7 +14,11 @@ const PropertyMap = dynamic(() => import("../../components/PropertyMap"), {
 });
 
 export default function PropertyDetailClient({ initialProperty }: { initialProperty: any }) {
-    const [property, setProperty] = useState(initialProperty);
+    const [property, setProperty] = useState(() => {
+        // Sanitize initial property to prevent document URLs from staying in state if not authorized
+        const { documents, ...rest } = initialProperty;
+        return { ...rest, documents: [] };
+    });
     const [isMember, setIsMember] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
@@ -79,6 +83,13 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 const isAdminSession = document.cookie.split('; ').some(row => row.startsWith('admin-session='));
                 setIsAdmin(isAdminSession);
                 console.log("DEBUG: Admin session status:", isAdminSession);
+
+                // If authorized, populate documents from initial property
+                if (authenticated || isAdminSession) {
+                    if (initialProperty?.documents) {
+                        setProperty(prev => ({ ...prev, documents: initialProperty.documents }));
+                    }
+                }
             } catch (e) {
                 console.error("Auth check failed:", e);
                 setIsMember(false);
@@ -86,7 +97,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
             }
         };
         checkAuth();
-    }, []);
+    }, [initialProperty]);
 
     useEffect(() => {
         const fetchLive = async () => {
@@ -103,8 +114,15 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
 
             if (data && !error) {
                 console.log("DEBUG: Live property data fetched:", data);
+
+                // Only include documents if we are authorized
+                const sanitizedData = { ...data };
+                if (!isMember && !isAdmin) {
+                    sanitizedData.documents = [];
+                }
+
                 setProperty({
-                    ...data,
+                    ...sanitizedData,
                     id: String(data.id),
                 });
             } else if (error) {
@@ -112,9 +130,9 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
             }
         };
         fetchLive();
-    }, [initialProperty.id]);
+    }, [initialProperty.id, isMember, isAdmin]);
 
-    const docs = parseArray(property?.documents);
+    const docs = (isMember || isAdmin) ? parseArray(property?.documents) : [];
     const galleryImages = parseArray(property?.images);
 
     console.log("DEBUG: Render state - isMember:", isMember, "isAdmin:", isAdmin, "docsCount:", docs.length, "rawDocs:", property?.documents);
@@ -192,17 +210,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                         </div>
                     )}
 
-                    {!isMember && !isAdmin && docs.length > 0 && (
-                        <div className="p-10 bg-gray-900 border-2 border-[var(--primary)] rounded-3xl text-center shadow-2xl relative overflow-hidden">
-                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[var(--primary)] opacity-10 rounded-full blur-3xl"></div>
-                            <span className="text-5xl mb-6 block drop-shadow-lg">🔒</span>
-                            <h3 className="text-2xl font-bold text-white mb-3">Premium Member Content</h3>
-                            <p className="text-gray-400 mb-8 max-w-sm mx-auto leading-relaxed">View original papers, survey reports, and official documentation for this premium property.</p>
-                            <Link href="/login" className="px-10 py-4 bg-[var(--primary)] text-black text-sm font-black uppercase tracking-widest rounded-full hover:bg-white hover:scale-110 transition-all inline-block shadow-[0_0_20px_rgba(255,166,0,0.3)]">
-                                Login to Access Papers
-                            </Link>
-                        </div>
-                    )}
 
                     {/* Key Specs */}
                     <div className="grid grid-cols-3 gap-4 p-6 bg-gray-900 rounded-lg border border-gray-100 shadow-sm">
