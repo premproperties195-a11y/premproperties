@@ -78,6 +78,22 @@ export default function PropertyEditClient({ id }: { id: string }) {
 
             if (error) throw error;
 
+            // Defensive parsing for arrays
+            const parseArray = (val: any) => {
+                if (Array.isArray(val)) return val;
+                if (typeof val === 'string' && val.trim() !== '') {
+                    try {
+                        const parsed = JSON.parse(val);
+                        if (Array.isArray(parsed)) return parsed;
+                    } catch (e) {
+                        if (val.startsWith('{') && val.endsWith('}')) {
+                            return val.slice(1, -1).split(',').map(s => s.trim().replace(/^"(.*)"$/, '$1'));
+                        }
+                    }
+                }
+                return [];
+            };
+
             // Ensure all fields have valid defaults to avoid "value should not be null" warnings
             const sanitizedData = {
                 ...data,
@@ -91,9 +107,9 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 description: data.description || "",
                 map_address: data.map_address || "",
                 rent_frequency: data.rent_frequency || "Month",
-                images: Array.isArray(data.images) ? data.images : [],
-                amenities: Array.isArray(data.amenities) ? data.amenities : [],
-                documents: Array.isArray(data.documents) ? data.documents : [],
+                images: parseArray(data.images),
+                amenities: parseArray(data.amenities),
+                documents: parseArray(data.documents),
                 specs: {
                     area: data.specs?.area || "",
                     beds: data.specs?.beds || 0,
