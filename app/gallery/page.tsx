@@ -2,6 +2,12 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import { fetchPropertiesData, fetchCompanyData } from "../lib/data";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Project Gallery | PREM Properties",
+    description: "View our portfolio of premium properties and successful real estate developments.",
+};
 
 async function getData() {
     return fetchPropertiesData();

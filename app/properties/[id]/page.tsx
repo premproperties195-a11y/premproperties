@@ -2,6 +2,23 @@ import { fetchPropertiesData } from "../../lib/data";
 import PropertyDetailClient from "./PropertyDetailClient";
 import Link from "next/link";
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+    const properties = await fetchPropertiesData();
+    const property = properties.find((p: any) => String(p.id) === params.id);
+
+    if (!property) return { title: "Property Not Found" };
+
+    return {
+        title: `${property.title} | PREM Properties`,
+        description: property.description?.substring(0, 160) || `View details for ${property.title} in ${property.location}`,
+        openGraph: {
+            title: property.title,
+            description: property.description,
+            images: [property.image],
+        },
+    };
+}
+
 export async function generateStaticParams() {
     const properties = await fetchPropertiesData();
     return properties.map((p: any) => ({ id: String(p.id) }));

@@ -14,10 +14,14 @@ async function getData() {
     return { propertiesData, companyData };
 }
 
-export const metadata = {
-    title: "Properties | PREM",
-    description: "Explore our premium residential and commercial properties.",
-};
+export async function generateMetadata() {
+    const data = await fetchCompanyData();
+    const seo = data?.seo || {};
+    return {
+        title: `Properties | ${seo.defaultTitle || "PREM Properties"}`,
+        description: "Explore our premium residential and commercial properties.",
+    };
+}
 
 export default async function PropertiesPage() {
     const { propertiesData, companyData } = await getData();

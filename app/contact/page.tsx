@@ -3,6 +3,12 @@ import Footer from "../components/Footer";
 import ContactForm from "../components/ContactForm";
 
 import { fetchCompanyData } from "../lib/data";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Contact Us | PREM Properties",
+    description: "Get in touch with PREM Properties for the best real estate deals in Kongara Kalan and Hyderabad.",
+};
 
 async function getData() {
     return fetchCompanyData();

@@ -8,11 +8,16 @@ import HomeGallery from "./components/HomeGallery";
 import { fetchCompanyData, fetchPropertiesData } from "./lib/data";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "PREM Properties | Premium Real Estate in Kongara Kalan, Hyderabad",
-  description: "Invest in Kongara Kalan, Hyderabad's fastest-growing real estate hub. Near ORR Exit 13, Foxconn, and Hardware Park. Premium residential plots, villas, and apartments.",
-  keywords: ["Real Estate Hyderabad", "Kongara Kalan Plots", "Foxconn Hyderabad Projects", "Investment in Kongara Kalan", "Premium Villas Hyderabad"],
-};
+export async function generateMetadata() {
+  const companyData = await fetchCompanyData();
+  const seo = companyData?.seo || {};
+
+  return {
+    title: seo.defaultTitle || "PREM Properties | Premium Real Estate in Kongara Kalan, Hyderabad",
+    description: seo.defaultDescription || "Invest in Kongara Kalan, Hyderabad's fastest-growing real estate hub. Near ORR Exit 13, Foxconn, and Hardware Park.",
+    keywords: seo.keywords || "Real Estate Hyderabad, Kongara Kalan Plots",
+  };
+}
 
 async function getData() {
   const [propertiesData, companyData] = await Promise.all([
