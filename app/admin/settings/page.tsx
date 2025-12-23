@@ -215,35 +215,37 @@ export default function SettingsAdmin() {
 
     return (
         <div className="max-w-6xl">
-            <div className="flex justify-between items-end mb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-                    <p className="text-gray-600">Global website configuration</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">Settings</h1>
+                    <p className="text-sm md:text-base text-gray-600">Global website configuration</p>
                 </div>
                 <button
                     onClick={handleSubmit}
                     disabled={saving}
-                    className="px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50 shadow-lg"
+                    className="w-full sm:w-auto px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50 shadow-lg"
                 >
                     {saving ? "Saving..." : "Save All Changes"}
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-8 bg-gray-200 p-1 rounded-xl w-fit">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === tab.id
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-500 hover:text-gray-700"
-                            }`}
-                    >
-                        <span>{tab.icon}</span>
-                        {tab.label}
-                    </button>
-                ))}
+            <div className="flex gap-2 mb-8 bg-gray-200 p-1 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-hide">
+                <div className="flex gap-1 min-w-max p-1">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm md:text-base font-bold transition-all whitespace-nowrap ${activeTab === tab.id
+                                ? "bg-white text-black shadow-sm"
+                                : "text-gray-500 hover:text-gray-700"
+                                }`}
+                        >
+                            <span>{tab.icon}</span>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <div className="space-y-8">
