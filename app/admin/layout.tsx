@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
-<<<<<<< HEAD
 import { fetchCompanyData } from "../lib/data";
-=======
->>>>>>> 5355a49 (first commit)
 import { usePathname, useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,10 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const [user, setUser] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-<<<<<<< HEAD
     const [company, setCompany] = useState<any>(null);
-=======
->>>>>>> 5355a49 (first commit)
 
     const allNavItems = useMemo(() => [
         { label: "Dashboard", href: "/admin/", icon: "📊", permission: "all" },
@@ -65,15 +59,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
         }
 
-<<<<<<< HEAD
         const loadCompany = async () => {
             const data = await fetchCompanyData();
             setCompany(data);
         };
         loadCompany();
 
-=======
->>>>>>> 5355a49 (first commit)
         setIsLoaded(true);
 
         if (!isLoginPage) {
@@ -110,10 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     const isLoginPage = pathname === "/admin/login/";
-<<<<<<< HEAD
     const logoUrl = company?.appearance?.logo || "/logo.png";
-=======
->>>>>>> 5355a49 (first commit)
 
     if (isLoginPage) {
         return <>{children}</>;
@@ -126,11 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="p-6 flex flex-col items-center text-center border-b border-gray-800">
                     <Link href="/">
                         <img
-<<<<<<< HEAD
                             src={logoUrl}
-=======
-                            src="/logo.png"
->>>>>>> 5355a49 (first commit)
                             alt="PREM Properties"
                             className="h-16 w-auto object-contain mb-4 invert brightness-0"
                         />
