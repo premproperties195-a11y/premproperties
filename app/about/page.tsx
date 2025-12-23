@@ -5,9 +5,9 @@ import { fetchCompanyData } from "../lib/data";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About | PREM Properties - Kongara Kalan Real Estate",
-  description: "Learn about PREM Properties in Kongara Kalan, a rapidly developing industrial hub near Hyderabad. Strategic location near ORR Exit 13, Foxconn, Hardware Park, and major job creation zones.",
-  keywords: ["Kongara Kalan Real Estate", "Foxconn Hyderabad", "Hardware Park Hyderabad", "ORR Exit 13 Plots", "Ranga Reddy IDOC", "Industrial Growth Hyderabad"],
+  title: "About | PREM Properties - Kongara Kalan Development",
+  description: "Discover the growth of Kongara Kalan, Hyderabad's industrial powerhouse. Strategically located near ORR Exit 13, Foxconn, Hardware Park, Amazon Data Centre, and the Ranga Reddy IDOC. Ideal for residential and commercial investment.",
+  keywords: ["Kongara Kalan Growth", "Foxconn Hyderabad", "Amazon Data Centre Hyderabad", "Hardware Park Plots", "ORR Exit 13 Real Estate", "Ranga Reddy IDOC Location", "Gold Refinery Kongara Kalan", "Hyderabad Industrial Development"],
 };
 
 async function getData() {

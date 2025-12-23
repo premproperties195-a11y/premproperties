@@ -13,9 +13,9 @@ export async function generateMetadata() {
   const seo = companyData?.seo || {};
 
   return {
-    title: seo.defaultTitle || "PREM Properties | Premium Real Estate in Kongara Kalan, Hyderabad",
-    description: seo.defaultDescription || "Invest in Kongara Kalan, Hyderabad's fastest-growing real estate hub. Near ORR Exit 13, Foxconn, and Hardware Park.",
-    keywords: seo.keywords || "Real Estate Hyderabad, Kongara Kalan Plots",
+    title: seo.defaultTitle || "PREM Properties | Real Estate in Kongara Kalan, Hyderabad",
+    description: seo.defaultDescription || "Invest in Kongara Kalan, Hyderabad's fastest-growing industrial hub. Near Foxconn, Hardware Park, Amazon Data Centre, and Ranga Reddy IDOC. Strategic location near ORR Exit 13.",
+    keywords: seo.keywords || "Kongara Kalan Real Estate, Foxconn Hyderabad, ORR Exit 13 Plots, Hardware Park, Ranga Reddy IDOC, Real Estate Investment Hyderabad, Gold Refinery Kongara Kalan",
   };
 }
 
@@ -35,6 +35,30 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)]">
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "RealEstateAgent",
+            "name": "PREM Properties",
+            "description": "Premium real estate in Kongara Kalan, Hyderabad. Near Foxconn, Hardware Park, and ORR Exit 13.",
+            "url": "https://premproperties.com",
+            "telephone": "+91 888 557 5557",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Hyderabad",
+              "addressRegion": "Telangana",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": "17.3734057",
+              "longitude": "78.5476483"
+            }
+          })
+        }}
+      />
       <Hero banner={homeBanner} />
 
       {/* ABOUT SECTION */}
