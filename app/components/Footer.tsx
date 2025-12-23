@@ -17,6 +17,8 @@ export default function Footer() {
 
   const footer = companyData?.footer || {};
   const contact = companyData?.contact || {};
+  const logoUrl = companyData?.appearance?.logo || "/logo.png";
+  const logoHeight = companyData?.appearance?.logoHeight || "96";
 
   return (
     <footer className="bg-black text-white py-16 border-t border-gray-900">
@@ -25,9 +27,10 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <img
-            src="/logo.png"
+            src={logoUrl}
             alt={companyData?.company?.name || "PREM Properties"}
-            className="h-24 w-auto object-contain mb-6"
+            style={{ height: `${logoHeight}px` }}
+            className="w-auto object-contain mb-6"
           />
           <p className="text-gray-400 text-sm leading-relaxed mb-6">
             {footer.aboutText || "Building landmarks that redefine luxury living."}

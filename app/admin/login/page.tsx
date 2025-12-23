@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { fetchCompanyData } from "../../lib/data";
 
 export default function AdminLogin() {
     const router = useRouter();
@@ -9,6 +10,15 @@ export default function AdminLogin() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [company, setCompany] = useState<any>(null);
+
+    useEffect(() => {
+        const loadCompany = async () => {
+            const data = await fetchCompanyData();
+            setCompany(data);
+        };
+        loadCompany();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,9 +52,10 @@ export default function AdminLogin() {
             <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8">
                 <div className="text-center mb-8">
                     <img
-                        src="/logo.png"
+                        src={company?.appearance?.logo || "/logo.png"}
                         alt="PREM Properties"
-                        className="h-24 w-auto object-contain mx-auto mb-6"
+                        style={{ height: `${company?.appearance?.logoHeight || "96"}px` }}
+                        className="w-auto object-contain mx-auto mb-6"
                     />
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Login</h1>
                     <p className="text-gray-600">PREM Properties Management</p>

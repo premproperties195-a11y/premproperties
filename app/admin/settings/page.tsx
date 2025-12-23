@@ -25,7 +25,8 @@ export default function SettingsAdmin() {
             secondaryColor: "#1A1A1A",
             fontSans: "Inter",
             fontSerif: "Playfair Display",
-            logoHeight: "80"
+            logoHeight: "80",
+            logo: "/logo.png"
         },
         seo: {
             defaultTitle: "",
@@ -435,6 +436,31 @@ export default function SettingsAdmin() {
                                             onChange={(e) => updateAppearance("logoHeight", e.target.value)}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-600 mb-2">Website Logo</label>
+                                        <div className="flex gap-4 items-center">
+                                            <div className="h-16 w-16 bg-gray-100 rounded border flex items-center justify-center overflow-hidden">
+                                                {settings.appearance.logo ? (
+                                                    <img src={settings.appearance.logo} alt="Logo Preview" className="h-full w-full object-contain" />
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">No Logo</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={settings.appearance.logo}
+                                                    onChange={(e) => updateAppearance("logo", e.target.value)}
+                                                    placeholder="/logo.png or Cloudinary URL"
+                                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm"
+                                                />
+                                                <CloudinaryUpload
+                                                    onUploadSuccess={(url) => updateAppearance("logo", url)}
+                                                    buttonText="📁"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

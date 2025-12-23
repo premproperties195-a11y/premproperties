@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import companyData from "../data/company.json";
+import { fetchCompanyData } from "../lib/data";
 
 export default function Header({ nav }: { nav?: any[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [member, setMember] = useState<any>(null);
+  const [company, setCompany] = useState<any>(null);
 
   useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchCompanyData();
+      setCompany(data);
+    };
+    loadData();
+
     const fetchMember = async () => {
       try {
         const res = await fetch("/api/member/session");
@@ -34,13 +41,16 @@ export default function Header({ nav }: { nav?: any[] }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = nav || companyData.navigation || [
+  const navLinks = nav || company?.navigation || [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Properties", href: "/properties" },
     { label: "Gallery", href: "/gallery" },
     { label: "Contact", href: "/contact" },
   ];
+
+  const logoUrl = company?.appearance?.logo || "/logo.png";
+  const logoHeight = company?.appearance?.logoHeight || "80";
 
   return (
     <header
@@ -51,9 +61,10 @@ export default function Header({ nav }: { nav?: any[] }) {
         {/* LOGO */}
         <Link href="/" className="group relative z-50">
           <img
-            src="/logo.png"
-            alt="PREM Properties"
-            className="h-20 w-auto object-contain"
+            src={logoUrl}
+            alt={company?.company?.name || "PREM Properties"}
+            style={{ height: `${logoHeight}px` }}
+            className="w-auto object-contain"
           />
         </Link>
 

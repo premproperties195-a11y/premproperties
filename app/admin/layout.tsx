@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
+import { fetchCompanyData } from "../lib/data";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const [user, setUser] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [company, setCompany] = useState<any>(null);
 
     const allNavItems = useMemo(() => [
         { label: "Dashboard", href: "/admin/", icon: "📊", permission: "all" },
@@ -57,6 +59,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
         }
 
+        const loadCompany = async () => {
+            const data = await fetchCompanyData();
+            setCompany(data);
+        };
+        loadCompany();
+
         setIsLoaded(true);
 
         if (!isLoginPage) {
@@ -93,6 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     const isLoginPage = pathname === "/admin/login/";
+    const logoUrl = company?.appearance?.logo || "/logo.png";
 
     if (isLoginPage) {
         return <>{children}</>;
@@ -105,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="p-6 flex flex-col items-center text-center border-b border-gray-800">
                     <Link href="/">
                         <img
-                            src="/logo.png"
+                            src={logoUrl}
                             alt="PREM Properties"
                             className="h-16 w-auto object-contain mb-4 invert brightness-0"
                         />
