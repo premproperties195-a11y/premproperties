@@ -2,8 +2,8 @@
   {
     "id": "master-admin-001",
     "username": "Super Admin",
-    "email": "admin@prem.com",
-    "password": "admin123",
+    "email": "premproperties195@gmail.com",
+    "password": "admin@123",
     "role": "super_admin",
     "permissions": [
       "all"

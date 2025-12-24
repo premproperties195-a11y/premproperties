@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { fetchCompanyData } from "../../lib/data";
 
 export default function AdminLogin() {
@@ -78,9 +79,12 @@ export default function AdminLogin() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Password
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-bold text-gray-700">
+                                Password
+                            </label>
+                            <Link href="/forgot-password?type=admin" title="Forgot Admin Password" className="text-xs text-[var(--primary)] font-bold hover:underline">Forgot password?</Link>
+                        </div>
                         <input
                             type="password"
                             value={password}
@@ -105,6 +109,10 @@ export default function AdminLogin() {
                     >
                         {loading ? "Logging in..." : "Login"}
                     </button>
+
+                    <div className="text-center mt-4">
+                        <Link href="/admin/login-otp" className="text-sm text-gray-500 hover:text-black font-medium">Login with OTP instead</Link>
+                    </div>
                 </form>
 
             </div>

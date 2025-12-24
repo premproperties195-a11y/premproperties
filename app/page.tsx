@@ -68,7 +68,7 @@ export default async function Home() {
       <FeaturedProjects projects={propertiesData} />
 
       {/* HOME GALLERY */}
-      <HomeGallery />
+      <HomeGallery properties={propertiesData} galleryImages={companyData?.galleryImages} />
 
       <Footer />
     </main>

@@ -9,10 +9,12 @@ import Footer from "../components/Footer";
 
 export default function MemberLoginPage() {
     const router = useRouter();
+    const [mode, setMode] = useState<"password" | "otp" | "otp-verify">("password");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -25,10 +27,10 @@ export default function MemberLoginPage() {
         checkSession();
     }, [router]);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handlePasswordLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
+        setMessage(null);
 
         try {
             const res = await fetch("/api/member/login", {
@@ -40,13 +42,65 @@ export default function MemberLoginPage() {
             const data = await res.json();
 
             if (res.ok) {
-                // Refresh to update header state
                 window.location.href = "/";
             } else {
-                setError(data.error || "Login failed");
+                setMessage({ type: 'error', text: data.error || "Login failed" });
             }
         } catch (err) {
-            setError("Something went wrong. Please try again.");
+            setMessage({ type: 'error', text: "Something went wrong. Please try again." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRequestOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            const res = await fetch("/api/member/request-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setMode("otp-verify");
+                setMessage({ type: 'success', text: "OTP sent to your email!" });
+            } else {
+                setMessage({ type: 'error', text: data.error || "Failed to send OTP" });
+            }
+        } catch (err) {
+            setMessage({ type: 'error', text: "Request failed. Check if DB supports OTP." });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            const res = await fetch("/api/member/verify-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, otp }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                window.location.href = "/";
+            } else {
+                setMessage({ type: 'error', text: data.error || "Invalid OTP" });
+            }
+        } catch (err) {
+            setMessage({ type: 'error', text: "Verification failed." });
         } finally {
             setLoading(false);
         }
@@ -67,45 +121,119 @@ export default function MemberLoginPage() {
                         <p className="text-gray-500">Access exclusive property documents and details.</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        {error && (
-                            <div className="bg-red-50 text-red-500 p-4 rounded-lg text-sm border border-red-100">
-                                {error}
-                            </div>
-                        )}
-
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
-                                placeholder="name@example.com"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
-                                placeholder="••••••••"
-                                required
-                            />
-                        </div>
-
+                    <div className="flex gap-4 mb-8 bg-gray-50 p-1 rounded-xl">
                         <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                            onClick={() => { setMode("password"); setMessage(null); }}
+                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${mode === 'password' ? 'bg-white shadow-sm text-black' : 'text-gray-400'}`}
                         >
-                            {loading ? "Authenticating..." : "Login to Member Area"}
+                            Password
                         </button>
-                    </form>
+                        <button
+                            onClick={() => { setMode("otp"); setMessage(null); }}
+                            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${mode.startsWith('otp') ? 'bg-white shadow-sm text-black' : 'text-gray-400'}`}
+                        >
+                            OTP Login
+                        </button>
+                    </div>
+
+                    {message && (
+                        <div className={`mb-6 p-4 rounded-xl text-sm border ${message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    {mode === "password" && (
+                        <form onSubmit={handlePasswordLogin} className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                                    placeholder="name@example.com"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-sm font-bold text-gray-700">Password</label>
+                                    <Link href="/forgot-password" title="Forgot Password Page" className="text-xs text-[var(--primary)] font-bold hover:underline">Forgot password?</Link>
+                                </div>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                            >
+                                {loading ? "Authenticating..." : "Login to Member Area"}
+                            </button>
+                        </form>
+                    )}
+
+                    {mode === "otp" && (
+                        <form onSubmit={handleRequestOtp} className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                                    placeholder="name@example.com"
+                                    required
+                                />
+                                <p className="mt-2 text-[10px] text-gray-400 font-medium">We will send a 6-digit verification code to your registered email.</p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                            >
+                                {loading ? "Sending Code..." : "Send Verification Code"}
+                            </button>
+                        </form>
+                    )}
+
+                    {mode === "otp-verify" && (
+                        <form onSubmit={handleVerifyOtp} className="space-y-6">
+                            <div className="text-center mb-4">
+                                <p className="text-sm text-gray-500">Entering code for <span className="font-bold text-black">{email}</span></p>
+                                <button type="button" onClick={() => setMode("otp")} className="text-xs text-blue-600 hover:underline">Change email</button>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2 text-center uppercase tracking-widest">Verification Code</label>
+                                <input
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all text-center text-3xl font-black tracking-[1rem]"
+                                    placeholder="000000"
+                                    maxLength={6}
+                                    required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                            >
+                                {loading ? "Verifying..." : "Verify & Login"}
+                            </button>
+                        </form>
+                    )}
 
                     <div className="mt-8 text-center text-sm text-gray-500">
                         Don't have a member account? <br />
