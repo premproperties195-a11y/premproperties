@@ -67,6 +67,10 @@ export async function POST(request: Request) {
 
         const { images } = await request.json();
 
+        if (!supabase) {
+            return NextResponse.json({ error: "Database connection not available" }, { status: 503 });
+        }
+
         // Get existing data to merge
         const { data: existing } = await supabase
             .from("site_content")
