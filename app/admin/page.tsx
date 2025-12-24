@@ -16,6 +16,7 @@ export default function AdminDashboard() {
     }, []);
 
     const fetchStats = async () => {
+        if (!supabase) return;
         try {
             const [pCount, iCount, contentRes] = await Promise.all([
                 supabase.from('properties').select('*', { count: 'exact', head: true }),

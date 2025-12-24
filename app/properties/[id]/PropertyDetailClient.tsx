@@ -101,7 +101,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
 
     useEffect(() => {
         const fetchLive = async () => {
-            if (!initialProperty?.id) return;
+            if (!initialProperty?.id || !supabase) return;
 
             // Try fetching with both string and number ID just in case
             const propertyId = isNaN(Number(initialProperty.id)) ? initialProperty.id : Number(initialProperty.id);

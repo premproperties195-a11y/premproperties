@@ -151,6 +151,11 @@ export default function PropertyEditClient({ id }: { id: string }) {
             console.log("Saving Property Payload:", payload);
 
             let result;
+            if (!supabase) {
+                alert("Database connection not available. Cannot save.");
+                setLoading(false);
+                return;
+            }
             if (isNew) {
                 result = await supabase.from("properties").insert([payload]).select();
             } else {

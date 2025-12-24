@@ -34,6 +34,7 @@ export async function POST(request: Request) {
                 maxAge: 60 * 60 * 24,
             });
         } else {
+            if (!supabase) return NextResponse.json({ error: "Database not configured" }, { status: 503 });
             const { data: member } = await supabase.from("members").select("*").eq("email", email.toLowerCase()).single();
             if (member) {
                 const sessionData = {

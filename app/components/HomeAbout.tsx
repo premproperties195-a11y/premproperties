@@ -10,6 +10,7 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
 
     useEffect(() => {
         const fetchLive = async () => {
+            if (!supabase) return;
             const { data, error } = await supabase
                 .from('site_content')
                 .select('data')

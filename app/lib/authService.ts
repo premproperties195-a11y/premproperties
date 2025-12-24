@@ -24,6 +24,7 @@ export async function requestOTP(email: string, type: 'member' | 'admin') {
             console.error("[AUTH] Error reading users.json:", e);
         }
     } else {
+        if (!supabase) return { error: "Database not connected. Contact admin." };
         const { data, error } = await supabase.from("members").select("name").eq("email", cleanEmail).single();
         if (data && !error) {
             userExists = true;
@@ -41,6 +42,7 @@ export async function requestOTP(email: string, type: 'member' | 'admin') {
     const otp = generateOTP();
     const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
+    if (!supabase) return { error: "Database not connected" };
     const { error: tokenError } = await supabase
         .from("auth_tokens")
         .upsert({
@@ -83,6 +85,7 @@ export async function verifyOTP(email: string, code: string, type: 'member' | 'a
     const cleanEmail = email.trim().toLowerCase();
     console.log(`[AUTH] Verifying OTP for ${cleanEmail} (${type})`);
 
+    if (!supabase) return { error: "Database not connected" };
     const { data, error } = await supabase
         .from("auth_tokens")
         .select("*")
@@ -125,6 +128,7 @@ export async function requestPasswordReset(email: string, type: 'member' | 'admi
             }
         } catch (e) { }
     } else {
+        if (!supabase) return { error: "Database not connected" };
         const { data } = await supabase.from("members").select("name").eq("email", cleanEmail).single();
         if (data) {
             userExists = true;
@@ -140,6 +144,7 @@ export async function requestPasswordReset(email: string, type: 'member' | 'admi
     const token = generateResetToken();
     const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
+    if (!supabase) return { error: "Database not connected" };
     const { error: tokenError } = await supabase
         .from("auth_tokens")
         .upsert({
@@ -179,6 +184,7 @@ export async function requestPasswordReset(email: string, type: 'member' | 'admi
 
 export async function verifyResetToken(email: string, token: string, type: 'member' | 'admin') {
     const cleanEmail = email.trim().toLowerCase();
+    if (!supabase) return { error: "Database not connected" };
     const { data, error } = await supabase
         .from("auth_tokens")
         .select("*")
@@ -213,6 +219,7 @@ export async function finalizePasswordReset(email: string, tokenId: string, newP
             return { error: "System error: could not update local storage." };
         }
     } else {
+        if (!supabase) return { error: "Database not connected" };
         const { error: updateError } = await supabase
             .from("members")
             .update({ password: newPassword })
