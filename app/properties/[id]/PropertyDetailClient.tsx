@@ -113,7 +113,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 .single();
 
             if (data && !error) {
-                console.log("DEBUG: Live property data fetched:", data);
 
                 // Only include documents if we are authorized
                 const sanitizedData = { ...data };
@@ -126,7 +125,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                     id: String(data.id),
                 });
             } else if (error) {
-                console.error("DEBUG: Live fetch error:", error);
             }
         };
         fetchLive();
@@ -135,7 +133,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
     const docs = (isMember || isAdmin) ? parseArray(property?.documents) : [];
     const galleryImages = parseArray(property?.images);
 
-    console.log("DEBUG: Render state - isMember:", isMember, "isAdmin:", isAdmin, "docsCount:", docs.length, "rawDocs:", property?.documents);
 
     return (
         <main className="min-h-screen bg-white">
@@ -206,7 +203,6 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                                     <p className="text-green-600/70 text-sm">Our team is currently verifying and uploading the original papers for this property.</p>
                                 </div>
                             )}
-                            {console.log("DEBUG: Rendering Documents section. Count:", docs.length)}
                         </div>
                     )}
 

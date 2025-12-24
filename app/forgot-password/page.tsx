@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
     const searchParams = useSearchParams();
     const [type, setType] = useState<'member' | 'admin'>('member');
     const [email, setEmail] = useState("");
@@ -47,56 +47,62 @@ export default function ForgotPasswordPage() {
     };
 
     return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md"
+        >
+            <div className="text-center mb-10">
+                <h1 className="text-4xl font-serif font-bold mb-4">{type === 'admin' ? 'Admin ' : ''}Forgot Password</h1>
+                <p className="text-gray-500">Enter your email to receive a password reset link.</p>
+            </div>
+
+            {message && (
+                <div className={`mb-6 p-4 rounded-xl text-sm border ${message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                    {message.text}
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                        placeholder="name@example.com"
+                        required
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                >
+                    {loading ? "Sending..." : "Send Reset Link"}
+                </button>
+            </form>
+
+            <div className="mt-8 text-center text-sm">
+                <Link href={type === 'admin' ? "/admin/login" : "/login"} className="text-gray-500 hover:text-black font-bold flex items-center justify-center gap-2">
+                    &larr; Back to Login
+                </Link>
+            </div>
+        </motion.div>
+    );
+}
+
+export default function ForgotPasswordPage() {
+    return (
         <main className="min-h-screen bg-white">
             <Header />
-
             <section className="pt-32 pb-24 px-6 flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full max-w-md"
-                >
-                    <div className="text-center mb-10">
-                        <h1 className="text-4xl font-serif font-bold mb-4">{type === 'admin' ? 'Admin ' : ''}Forgot Password</h1>
-                        <p className="text-gray-500">Enter your email to receive a password reset link.</p>
-                    </div>
-
-                    {message && (
-                        <div className={`mb-6 p-4 rounded-xl text-sm border ${message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
-                            {message.text}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
-                                placeholder="name@example.com"
-                                required
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
-                        >
-                            {loading ? "Sending..." : "Send Reset Link"}
-                        </button>
-                    </form>
-
-                    <div className="mt-8 text-center text-sm">
-                        <Link href={type === 'admin' ? "/admin/login" : "/login"} className="text-gray-500 hover:text-black font-bold flex items-center justify-center gap-2">
-                            &larr; Back to Login
-                        </Link>
-                    </div>
-                </motion.div>
+                <Suspense fallback={<div className="text-center py-20">Loading...</div>}>
+                    <ForgotPasswordContent />
+                </Suspense>
             </section>
-
             <Footer />
         </main>
     );

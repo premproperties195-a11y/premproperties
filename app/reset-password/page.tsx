@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [token, setToken] = useState("");
@@ -62,74 +62,76 @@ export default function ResetPasswordPage() {
 
     if (!token || !email) {
         return (
-            <main className="min-h-screen bg-white">
-                <Header />
-                <section className="pt-32 pb-24 px-6 text-center">
-                    <h1 className="text-2xl font-bold text-red-500">Invalid Reset Link</h1>
-                    <p className="mt-4">Please request a new reset link from the login page.</p>
-                </section>
-                <Footer />
-            </main>
+            <section className="pt-32 pb-24 px-6 text-center">
+                <h1 className="text-2xl font-bold text-red-500">Invalid Reset Link</h1>
+                <p className="mt-4">Please request a new reset link from the login page.</p>
+            </section>
         );
     }
 
     return (
-        <main className="min-h-screen bg-white">
-            <Header />
+        <section className="pt-32 pb-24 px-6 flex items-center justify-center">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-md"
+            >
+                <div className="text-center mb-10">
+                    <h1 className="text-4xl font-serif font-bold mb-4">{type === 'admin' ? 'Admin ' : ''}Reset Password</h1>
+                    <p className="text-gray-500">Creating a secure password for <span className="font-bold text-black">{email}</span></p>
+                </div>
 
-            <section className="pt-32 pb-24 px-6 flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="w-full max-w-md"
-                >
-                    <div className="text-center mb-10">
-                        <h1 className="text-4xl font-serif font-bold mb-4">{type === 'admin' ? 'Admin ' : ''}Reset Password</h1>
-                        <p className="text-gray-500">Creating a secure password for <span className="font-bold text-black">{email}</span></p>
+                {message && (
+                    <div className={`mb-6 p-4 rounded-xl text-sm border ${message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
+                        {message.text}
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
+                        <input
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                            placeholder="••••••••"
+                            required
+                        />
                     </div>
 
-                    {message && (
-                        <div className={`mb-6 p-4 rounded-xl text-sm border ${message.type === 'success' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-500 border-red-100'}`}>
-                            {message.text}
-                        </div>
-                    )}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Confirm New Password</label>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                            placeholder="••••••••"
+                            required
+                        />
+                    </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
-                            <input
-                                type="password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
-                                placeholder="••••••••"
-                                required
-                            />
-                        </div>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
+                    >
+                        {loading ? "Updating..." : "Update Password"}
+                    </button>
+                </form>
+            </motion.div>
+        </section>
+    );
+}
 
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Confirm New Password</label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
-                                placeholder="••••••••"
-                                required
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-[var(--primary)] hover:text-black transition-all duration-300 disabled:opacity-50 shadow-lg"
-                        >
-                            {loading ? "Updating..." : "Update Password"}
-                        </button>
-                    </form>
-                </motion.div>
-            </section>
-
+export default function ResetPasswordPage() {
+    return (
+        <main className="min-h-screen bg-white">
+            <Header />
+            <Suspense fallback={<div className="text-center py-20">Loading...</div>}>
+                <ResetPasswordContent />
+            </Suspense>
             <Footer />
         </main>
     );
