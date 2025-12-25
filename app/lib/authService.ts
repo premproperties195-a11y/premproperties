@@ -105,7 +105,9 @@ export async function verifyOTP(email: string, code: string, type: 'member' | 'a
     }
 
     // Clear OTP
-    await supabase.from("auth_tokens").delete().eq("id", data.id);
+    if (supabase) {
+        await supabase.from("auth_tokens").delete().eq("id", data.id);
+    }
     console.log(`[AUTH] OTP Verified successfully for ${cleanEmail}`);
 
     return { success: true };
@@ -229,7 +231,9 @@ export async function finalizePasswordReset(email: string, tokenId: string, newP
     }
 
     // 2. Delete the token
-    await supabase.from("auth_tokens").delete().eq("id", tokenId);
+    if (supabase) {
+        await supabase.from("auth_tokens").delete().eq("id", tokenId);
+    }
     console.log(`[AUTH] Password reset completed for ${cleanEmail}`);
 
     return { success: true };

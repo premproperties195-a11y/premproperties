@@ -25,6 +25,11 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
         setStatus("submitting");
 
         try {
+            if (!supabase) {
+                alert("Database connection not available. Please try later.");
+                setStatus("idle");
+                return;
+            }
             const { error } = await supabase
                 .from("inquiries")
                 .insert([{

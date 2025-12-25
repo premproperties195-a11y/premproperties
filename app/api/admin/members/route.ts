@@ -8,6 +8,7 @@ export async function GET() {
     }
 
     try {
+        if (!supabase) return NextResponse.json({ error: "Database not connected" }, { status: 503 });
         const { data, error } = await supabase
             .from("members")
             .select("*")
@@ -32,6 +33,8 @@ export async function POST(req: Request) {
         if (!name || !email || !password) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
+
+        if (!supabase) return NextResponse.json({ error: "Database not connected" }, { status: 503 });
 
         // Check if member already exists
         const { data: existing } = await supabase
@@ -69,6 +72,7 @@ export async function DELETE(req: Request) {
 
     try {
         const { id } = await req.json();
+        if (!supabase) return NextResponse.json({ error: "Database not connected" }, { status: 503 });
         const { error } = await supabase
             .from("members")
             .delete()

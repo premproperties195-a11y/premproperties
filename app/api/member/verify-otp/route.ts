@@ -14,6 +14,7 @@ export async function POST(request: Request) {
         }
 
         // 2. Success - Get member data to create session
+        if (!supabase) return NextResponse.json({ error: "Database not connected" }, { status: 503 });
         const { data: member, error } = await supabase
             .from("members")
             .select("*")

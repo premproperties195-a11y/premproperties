@@ -13,6 +13,10 @@ export default function PropertiesAdmin() {
     }, []);
 
     const fetchProperties = async () => {
+        if (!supabase) {
+            setLoading(false);
+            return;
+        }
         try {
             const { data, error } = await supabase
                 .from("properties")
@@ -30,6 +34,10 @@ export default function PropertiesAdmin() {
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this property?")) return;
+        if (!supabase) {
+            alert("Database connection not available.");
+            return;
+        }
 
         try {
             const { error } = await supabase

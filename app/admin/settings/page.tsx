@@ -53,6 +53,10 @@ export default function SettingsAdmin() {
     }, []);
 
     const fetchSettings = async () => {
+        if (!supabase) {
+            setLoading(false);
+            return;
+        }
         try {
             const { data, error } = await supabase
                 .from("site_content")
@@ -81,6 +85,10 @@ export default function SettingsAdmin() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!supabase) {
+            alert("Database connection not available.");
+            return;
+        }
         setSaving(true);
 
         try {

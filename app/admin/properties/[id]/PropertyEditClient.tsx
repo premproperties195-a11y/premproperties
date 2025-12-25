@@ -51,6 +51,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
     }, [id]);
 
     const fetchSettings = async () => {
+        if (!supabase) return;
         try {
             const { data, error } = await supabase
                 .from("site_content")
@@ -69,6 +70,10 @@ export default function PropertyEditClient({ id }: { id: string }) {
     };
 
     const fetchProperty = async () => {
+        if (!supabase) {
+            setLoading(false);
+            return;
+        }
         try {
             const { data, error } = await supabase
                 .from("properties")

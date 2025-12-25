@@ -13,6 +13,7 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!supabase) return;
             // Fetch Properties
             const { data: propData, error: propError } = await supabase
                 .from('properties')
