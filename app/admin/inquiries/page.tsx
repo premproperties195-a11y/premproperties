@@ -26,10 +26,6 @@ export default function InquiriesAdmin() {
     }, []);
 
     const fetchInquiries = async () => {
-        if (!supabase) {
-            setLoading(false);
-            return;
-        }
         try {
             setError(null);
             const { data, error: dbError } = await supabase
@@ -48,10 +44,6 @@ export default function InquiriesAdmin() {
     };
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
-        if (!supabase) {
-            alert("Database connection not available.");
-            return;
-        }
         try {
             const { error: dbError } = await supabase
                 .from("inquiries")
@@ -68,10 +60,6 @@ export default function InquiriesAdmin() {
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this inquiry?")) return;
-        if (!supabase) {
-            alert("Database connection not available.");
-            return;
-        }
 
         try {
             const { error: dbError } = await supabase

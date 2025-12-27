@@ -51,7 +51,6 @@ export default function PropertyEditClient({ id }: { id: string }) {
     }, [id]);
 
     const fetchSettings = async () => {
-        if (!supabase) return;
         try {
             const { data, error } = await supabase
                 .from("site_content")
@@ -70,10 +69,6 @@ export default function PropertyEditClient({ id }: { id: string }) {
     };
 
     const fetchProperty = async () => {
-        if (!supabase) {
-            setLoading(false);
-            return;
-        }
         try {
             const { data, error } = await supabase
                 .from("properties")
@@ -82,22 +77,6 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 .single();
 
             if (error) throw error;
-
-            // Defensive parsing for arrays
-            const parseArray = (val: any) => {
-                if (Array.isArray(val)) return val;
-                if (typeof val === 'string' && val.trim() !== '') {
-                    try {
-                        const parsed = JSON.parse(val);
-                        if (Array.isArray(parsed)) return parsed;
-                    } catch (e) {
-                        if (val.startsWith('{') && val.endsWith('}')) {
-                            return val.slice(1, -1).split(',').map(s => s.trim().replace(/^"(.*)"$/, '$1'));
-                        }
-                    }
-                }
-                return [];
-            };
 
             // Ensure all fields have valid defaults to avoid "value should not be null" warnings
             const sanitizedData = {
@@ -112,9 +91,9 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 description: data.description || "",
                 map_address: data.map_address || "",
                 rent_frequency: data.rent_frequency || "Month",
-                images: parseArray(data.images),
-                amenities: parseArray(data.amenities),
-                documents: parseArray(data.documents),
+                images: Array.isArray(data.images) ? data.images : [],
+                amenities: Array.isArray(data.amenities) ? data.amenities : [],
+                documents: Array.isArray(data.documents) ? data.documents : [],
                 specs: {
                     area: data.specs?.area || "",
                     beds: data.specs?.beds || 0,
@@ -156,11 +135,6 @@ export default function PropertyEditClient({ id }: { id: string }) {
             console.log("Saving Property Payload:", payload);
 
             let result;
-            if (!supabase) {
-                alert("Database connection not available. Cannot save.");
-                setLoading(false);
-                return;
-            }
             if (isNew) {
                 result = await supabase.from("properties").insert([payload]).select();
             } else {

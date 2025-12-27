@@ -5,10 +5,9 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     const isLoginPage = pathname === "/admin/login" || pathname === "/admin/login/";
-    const isResetPwdApi = pathname === "/api/admin/reset-password" || pathname === "/api/admin/reset-password/";
 
     // Protect admin routes and admin API routes
-    if ((pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) && !isLoginPage && !isResetPwdApi) {
+    if ((pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) && !isLoginPage) {
         const session = request.cookies.get("admin-session");
 
         try {

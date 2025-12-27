@@ -100,8 +100,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         router.push("/admin/login/");
     };
 
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-
     const isLoginPage = pathname === "/admin/login/";
     const logoUrl = company?.appearance?.logo || "/logo.png";
 
@@ -110,36 +108,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-            {/* Mobile Header */}
-            <header className="md:hidden bg-gray-900 text-white p-4 flex items-center justify-between sticky top-0 z-50 border-b border-gray-800">
-                <div className="flex items-center gap-3">
-                    <img src={logoUrl} alt="Logo" className="h-8 w-auto invert brightness-0" />
-                    <span className="font-bold text-sm">PREM Admin</span>
-                </div>
-                <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="p-2 text-2xl hover:bg-gray-800 rounded-lg transition-colors"
-                    aria-label="Toggle Menu"
-                >
-                    {sidebarOpen ? "✕" : "☰"}
-                </button>
-            </header>
-
-            {/* Sidebar Overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-[60] md:hidden backdrop-blur-sm"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
-
+        <div className="min-h-screen bg-gray-50">
             {/* Sidebar */}
-            <aside
-                className={`fixed md:sticky md:top-0 left-0 top-0 h-[100dvh] md:h-screen w-64 bg-gray-900 text-white flex flex-col z-[70] transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-                    }`}
-            >
-                <div className="p-6 flex flex-col items-center text-center border-b border-gray-800 hidden md:flex">
+            <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white flex flex-col">
+                <div className="p-6 flex flex-col items-center text-center border-b border-gray-800">
                     <Link href="/">
                         <img
                             src={logoUrl}
@@ -151,18 +123,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <p className="text-gray-400 text-sm">Content Management</p>
                 </div>
 
-                {/* Mobile Logo in Sidebar */}
-                <div className="p-6 md:hidden border-b border-gray-800 text-center">
-                    <img src={logoUrl} alt="Logo" className="h-12 w-auto mx-auto mb-2 invert brightness-0" />
-                    <p className="font-bold">PREM Admin</p>
-                </div>
-
                 <nav className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin scrollbar-thumb-gray-800">
                     {isLoaded && navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            onClick={() => setSidebarOpen(false)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === item.href
                                 ? "bg-[var(--primary)] text-black font-bold"
                                 : "hover:bg-gray-800"
@@ -176,10 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 <div className="p-4 border-t border-gray-800">
                     <button
-                        onClick={() => {
-                            handleLogout();
-                            setSidebarOpen(false);
-                        }}
+                        onClick={handleLogout}
                         className="w-full px-4 py-3 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white border border-red-600/20 rounded-lg font-bold transition-all duration-300 flex items-center justify-center gap-2"
                     >
                         <span>🚪</span> Logout
@@ -188,7 +150,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-4 md:p-8 min-w-0">
+            <main className="ml-64 p-8">
                 {isLoaded ? children : <div className="text-center py-12">Loading...</div>}
             </main>
         </div>

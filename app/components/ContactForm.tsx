@@ -17,11 +17,6 @@ export default function ContactForm() {
         setStatus("loading");
 
         try {
-            if (!supabase) {
-                alert("Database connection not available. Please try later.");
-                setStatus("error");
-                return;
-            }
             const { error } = await supabase
                 .from("inquiries")
                 .insert([

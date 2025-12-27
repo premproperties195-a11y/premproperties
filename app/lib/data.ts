@@ -3,16 +3,14 @@ import { supabase } from './supabase';
 export async function fetchCompanyData() {
     try {
         // Try Supabase first (from site_content table)
-        if (supabase) {
-            const { data: dbData, error } = await supabase
-                .from('site_content')
-                .select('data')
-                .eq('id', 'company')
-                .single();
+        const { data: dbData, error } = await supabase
+            .from('site_content')
+            .select('data')
+            .eq('id', 'company')
+            .single();
 
-            if (dbData && !error) {
-                return dbData.data;
-            }
+        if (dbData && !error) {
+            return dbData.data;
         }
 
         // Fallback to local file - only on server
@@ -38,18 +36,16 @@ export async function fetchCompanyData() {
 export async function fetchPropertiesData() {
     try {
         // Try Supabase first
-        if (supabase) {
-            const { data: dbProperties, error } = await supabase
-                .from('properties')
-                .select('*')
-                .order('created_at', { ascending: false });
+        const { data: dbProperties, error } = await supabase
+            .from('properties')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-            if (dbProperties && !error && dbProperties.length > 0) {
-                return dbProperties.map(p => ({
-                    ...p,
-                    id: String(p.id) // Ensure ID is string for compat
-                }));
-            }
+        if (dbProperties && !error && dbProperties.length > 0) {
+            return dbProperties.map(p => ({
+                ...p,
+                id: String(p.id) // Ensure ID is string for compat
+            }));
         }
 
         // Fallback to local file - only on server

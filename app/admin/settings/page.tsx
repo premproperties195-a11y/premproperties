@@ -53,10 +53,6 @@ export default function SettingsAdmin() {
     }, []);
 
     const fetchSettings = async () => {
-        if (!supabase) {
-            setLoading(false);
-            return;
-        }
         try {
             const { data, error } = await supabase
                 .from("site_content")
@@ -85,10 +81,6 @@ export default function SettingsAdmin() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!supabase) {
-            alert("Database connection not available.");
-            return;
-        }
         setSaving(true);
 
         try {
@@ -223,37 +215,35 @@ export default function SettingsAdmin() {
 
     return (
         <div className="max-w-6xl">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+            <div className="flex justify-between items-end mb-8">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">Settings</h1>
-                    <p className="text-sm md:text-base text-gray-600">Global website configuration</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+                    <p className="text-gray-600">Global website configuration</p>
                 </div>
                 <button
                     onClick={handleSubmit}
                     disabled={saving}
-                    className="w-full sm:w-auto px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50 shadow-lg"
+                    className="px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50 shadow-lg"
                 >
                     {saving ? "Saving..." : "Save All Changes"}
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-8 bg-gray-200 p-1 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-hide">
-                <div className="flex gap-1 min-w-max p-1">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm md:text-base font-bold transition-all whitespace-nowrap ${activeTab === tab.id
-                                ? "bg-white text-black shadow-sm"
-                                : "text-gray-500 hover:text-gray-700"
-                                }`}
-                        >
-                            <span>{tab.icon}</span>
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
+            <div className="flex gap-2 mb-8 bg-gray-200 p-1 rounded-xl w-fit">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-2 px-6 py-2 rounded-lg font-bold transition-all ${activeTab === tab.id
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                            }`}
+                    >
+                        <span>{tab.icon}</span>
+                        {tab.label}
+                    </button>
+                ))}
             </div>
 
             <div className="space-y-8">
@@ -472,148 +462,141 @@ export default function SettingsAdmin() {
                                             </div>
                                         </div>
                                     </div>
-                                </div >
-                            </div >
-                        </div >
-                    </div >
-                )
-                }
-
-                {
-                    activeTab === "seo" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold mb-6 text-gray-900 border-b pb-4">Search Engine Optimization</h2>
-                            <div className="space-y-6 max-w-3xl">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Default Page Title</label>
-                                    <input
-                                        type="text"
-                                        value={settings.seo.defaultTitle}
-                                        onChange={(e) => updateSEO("defaultTitle", e.target.value)}
-                                        placeholder="e.g., PREM Properties | Premium Real Estate"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                                    />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "seo" && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                        <h2 className="text-xl font-bold mb-6 text-gray-900 border-b pb-4">Search Engine Optimization</h2>
+                        <div className="space-y-6 max-w-3xl">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Default Page Title</label>
+                                <input
+                                    type="text"
+                                    value={settings.seo.defaultTitle}
+                                    onChange={(e) => updateSEO("defaultTitle", e.target.value)}
+                                    placeholder="e.g., PREM Properties | Premium Real Estate"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Default Meta Description</label>
+                                <textarea
+                                    value={settings.seo.defaultDescription}
+                                    onChange={(e) => updateSEO("defaultDescription", e.target.value)}
+                                    rows={4}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Global Keywords (comma separated)</label>
+                                <input
+                                    type="text"
+                                    value={settings.seo.keywords}
+                                    onChange={(e) => updateSEO("keywords", e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "footer" && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                        <h2 className="text-xl font-bold mb-6 text-gray-900 border-b pb-4">Footer Management</h2>
+                        <div className="grid md:grid-cols-2 gap-10">
+                            <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Default Meta Description</label>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Footer About Text</label>
                                     <textarea
-                                        value={settings.seo.defaultDescription}
-                                        onChange={(e) => updateSEO("defaultDescription", e.target.value)}
+                                        value={settings.footer.aboutText}
+                                        onChange={(e) => updateFooter("aboutText", e.target.value)}
                                         rows={4}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Global Keywords (comma separated)</label>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Copyright Text</label>
                                     <input
                                         type="text"
-                                        value={settings.seo.keywords}
-                                        onChange={(e) => updateSEO("keywords", e.target.value)}
+                                        value={settings.footer.copyright}
+                                        onChange={(e) => updateFooter("copyright", e.target.value)}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                     />
                                 </div>
                             </div>
-                        </div>
-                    )
-                }
-
-                {
-                    activeTab === "footer" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                            <h2 className="text-xl font-bold mb-6 text-gray-900 border-b pb-4">Footer Management</h2>
-                            <div className="grid md:grid-cols-2 gap-10">
-                                <div className="space-y-6">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Footer About Text</label>
-                                        <textarea
-                                            value={settings.footer.aboutText}
-                                            onChange={(e) => updateFooter("aboutText", e.target.value)}
-                                            rows={4}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Copyright Text</label>
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-gray-700 mb-4">Social Links</h3>
+                                {Object.keys(settings.footer.social).map((platform) => (
+                                    <div key={platform}>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{platform}</label>
                                         <input
-                                            type="text"
-                                            value={settings.footer.copyright}
-                                            onChange={(e) => updateFooter("copyright", e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                            type="url"
+                                            value={settings.footer.social[platform as keyof typeof settings.footer.social]}
+                                            onChange={(e) => updateSocial(platform, e.target.value)}
+                                            placeholder={`https://www.${platform}.com/...`}
+                                            className="w-full px-4 py-1.5 border border-gray-300 rounded-lg text-sm"
                                         />
                                     </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <h3 className="font-bold text-gray-700 mb-4">Social Links</h3>
-                                    {Object.keys(settings.footer.social).map((platform) => (
-                                        <div key={platform}>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{platform}</label>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "config" && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                        <div className="flex justify-between items-center mb-6 border-b pb-4">
+                            <h2 className="text-xl font-bold text-gray-900">Property Configuration</h2>
+                            <button
+                                type="button"
+                                onClick={addCategory}
+                                className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-[var(--primary)] hover:text-black transition-colors text-sm"
+                            >
+                                + Add Category
+                            </button>
+                        </div>
+
+                        <div className="max-w-2xl">
+                            <h3 className="font-bold text-gray-700 mb-4">Property Categories</h3>
+                            <p className="text-gray-500 text-sm mb-6">Manage the categories available in the property edit form (e.g. Residential, Commercial).</p>
+
+                            <div className="space-y-4">
+                                {settings.propertyConfig?.categories?.map((cat, index) => (
+                                    <div key={index} className="flex gap-4 items-center animate-in fade-in slide-in-from-left-2 transition-all">
+                                        <div className="flex-1">
                                             <input
-                                                type="url"
-                                                value={settings.footer.social[platform as keyof typeof settings.footer.social]}
-                                                onChange={(e) => updateSocial(platform, e.target.value)}
-                                                placeholder={`https://www.${platform}.com/...`}
-                                                className="w-full px-4 py-1.5 border border-gray-300 rounded-lg text-sm"
+                                                type="text"
+                                                value={cat}
+                                                onChange={(e) => updateCategories(index, e.target.value)}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none font-medium"
+                                                placeholder="e.g., Residential"
                                             />
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )
-                }
-
-                {
-                    activeTab === "config" && (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                            <div className="flex justify-between items-center mb-6 border-b pb-4">
-                                <h2 className="text-xl font-bold text-gray-900">Property Configuration</h2>
-                                <button
-                                    type="button"
-                                    onClick={addCategory}
-                                    className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-[var(--primary)] hover:text-black transition-colors text-sm"
-                                >
-                                    + Add Category
-                                </button>
-                            </div>
-
-                            <div className="max-w-2xl">
-                                <h3 className="font-bold text-gray-700 mb-4">Property Categories</h3>
-                                <p className="text-gray-500 text-sm mb-6">Manage the categories available in the property edit form (e.g. Residential, Commercial).</p>
-
-                                <div className="space-y-4">
-                                    {settings.propertyConfig?.categories?.map((cat, index) => (
-                                        <div key={index} className="flex gap-4 items-center animate-in fade-in slide-in-from-left-2 transition-all">
-                                            <div className="flex-1">
-                                                <input
-                                                    type="text"
-                                                    value={cat}
-                                                    onChange={(e) => updateCategories(index, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none font-medium"
-                                                    placeholder="e.g., Residential"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={() => removeCategory(index)}
-                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-                                                title="Delete Category"
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {settings.propertyConfig?.categories?.length === 0 && (
-                                    <div className="text-center py-10 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                                        <p className="text-gray-400">No categories added yet.</p>
-                                        <button onClick={addCategory} className="text-[var(--primary)] font-bold mt-2 hover:underline">Add the first one</button>
+                                        <button
+                                            onClick={() => removeCategory(index)}
+                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                                            title="Delete Category"
+                                        >
+                                            🗑️
+                                        </button>
                                     </div>
-                                )}
+                                ))}
                             </div>
+
+                            {settings.propertyConfig?.categories?.length === 0 && (
+                                <div className="text-center py-10 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                                    <p className="text-gray-400">No categories added yet.</p>
+                                    <button onClick={addCategory} className="text-[var(--primary)] font-bold mt-2 hover:underline">Add the first one</button>
+                                </div>
+                            )}
                         </div>
-                    )
-                }
-            </div >
-        </div >
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }

@@ -19,7 +19,7 @@ export async function GET() {
                 {
                     id: "master-admin-001",
                     username: "Super Admin",
-                    email: "premproperties195@gmail.com",
+                    email: "admin@prem.com",
                     password: "admin123",
                     role: "super_admin",
                     permissions: ["all"],

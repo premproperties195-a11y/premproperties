@@ -18,7 +18,6 @@ export default function Header({ nav }: { nav?: any[] }) {
     };
     loadData();
 
-
     const fetchMember = async () => {
       try {
         const res = await fetch("/api/member/session");
@@ -52,7 +51,6 @@ export default function Header({ nav }: { nav?: any[] }) {
 
   const logoUrl = company?.appearance?.logo || "/logo.png";
   const logoHeight = company?.appearance?.logoHeight || "80";
-
 
   return (
     <header

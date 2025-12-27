@@ -10,7 +10,6 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
 
     useEffect(() => {
         const fetchLive = async () => {
-            if (!supabase) return;
             const { data, error } = await supabase
                 .from('site_content')
                 .select('data')
@@ -69,7 +68,7 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                     >
                         <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
                             <img
-                                src={initialCompany?.banners?.about?.url || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"}
+                                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"
                                 alt="PREM Properties Building"
                                 className="w-full h-[500px] object-cover"
                             />

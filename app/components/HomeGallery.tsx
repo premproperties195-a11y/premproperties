@@ -2,18 +2,12 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import propertiesData from "../data/properties.json";
 
-interface HomeGalleryProps {
-    properties: any[];
-    galleryImages?: string[];
-}
-
-export default function HomeGallery({ properties = [], galleryImages = [] }: HomeGalleryProps) {
-    // Only using general gallery images as per user request
-    const combined = (galleryImages || []).slice(0, 6);
-
-    // Fallback if no images are found
-    if (combined.length === 0) return null;
+export default function HomeGallery() {
+    // Collect all images from properties data to simulate a gallery
+    // In a real app, this might come from a specific gallery source
+    const allImages = propertiesData.map(p => p.image).slice(0, 6);
 
     return (
         <section className="py-24 bg-white">
@@ -28,7 +22,7 @@ export default function HomeGallery({ properties = [], galleryImages = [] }: Hom
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[200px]">
-                    {combined.map((src, i) => (
+                    {allImages.map((src, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 20 }}
