@@ -27,13 +27,7 @@ export default async function GalleryPage() {
         tags: ""
     };
 
-    // Aggregate all images from properties + general gallery
-    const propertyImages = propertiesData.reduce((acc: string[], curr: any) => {
-        return [...acc, ...(curr.images || [])];
-    }, []);
-
-    const generalImages = companyData.galleryImages || [];
-    const allImages = [...generalImages, ...propertyImages].filter(img => img && img.trim() !== "");
+    const allImages = (companyData.galleryImages || []).filter((img: string) => img && img.trim() !== "");
 
     return (
         <main className="min-h-screen bg-[var(--background)]">
@@ -83,13 +77,25 @@ export default async function GalleryPage() {
             </section>
 
             <section className="py-16 px-6">
-                <div className="max-w-7xl mx-auto columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-                    {allImages.map((img, i) => (
-                        <div key={i} className="break-inside-avoid rounded-lg overflow-hidden group relative hover:shadow-xl transition-shadow duration-300">
-                            <img src={img} alt="Gallery" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="max-w-7xl mx-auto">
+                    {allImages.length > 0 ? (
+                        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                            {allImages.map((img, i) => (
+                                <div key={i} className="break-inside-avoid rounded-lg overflow-hidden group relative hover:shadow-xl transition-shadow duration-300">
+                                    <img src={img} alt="Gallery" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    ) : (
+                        <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                            <div className="text-6xl mb-4">📸</div>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Gallery coming soon</h2>
+                            <p className="text-gray-500 max-w-md mx-auto">
+                                We are currently curating a visual tour of our finest projects. Please check back later.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </section>
 

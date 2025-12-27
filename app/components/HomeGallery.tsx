@@ -9,9 +9,8 @@ interface HomeGalleryProps {
 }
 
 export default function HomeGallery({ properties = [], galleryImages = [] }: HomeGalleryProps) {
-    // Aggregating a mix of general gallery images and property images
-    const propImages = properties.map(p => p.image).filter(Boolean);
-    const combined = [...galleryImages.slice(0, 3), ...propImages].slice(0, 6);
+    // Only using general gallery images as per user request
+    const combined = (galleryImages || []).slice(0, 6);
 
     // Fallback if no images are found
     if (combined.length === 0) return null;
