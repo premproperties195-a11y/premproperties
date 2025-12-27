@@ -23,9 +23,11 @@ async function getData() {
   return { propertiesData, companyData };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const { propertiesData, companyData } = await getData();
-  const homeBanner = companyData.banners?.home;
+  const homeBanner = companyData?.banners?.home;
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -33,13 +35,13 @@ export default async function Home() {
       <Hero banner={homeBanner} />
 
       {/* ABOUT SECTION */}
-      <HomeAbout company={companyData.company} />
+      <HomeAbout company={companyData?.company} />
 
       {/* FEATURED PROPERTIES PREVIEW */}
       <FeaturedProjects projects={propertiesData} />
 
       {/* HOME GALLERY */}
-      <HomeGallery />
+      <HomeGallery properties={propertiesData} galleryImages={companyData?.galleryImages} />
 
       <Footer />
     </main>
