@@ -107,6 +107,34 @@ export default function AdminLogin() {
                     </button>
                 </form>
 
+                {/* Additional Login Options */}
+                <div className="mt-6 space-y-3">
+                    <div className="text-center">
+                        <button
+                            onClick={() => router.push('/forgot-password')}
+                            className="text-sm text-gray-600 hover:text-[var(--primary)] font-medium transition-colors"
+                        >
+                            Forgot Password?
+                        </button>
+                    </div>
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-xs">
+                            <span className="bg-white px-2 text-gray-500">OR</span>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => router.push('/otp-login')}
+                        className="w-full py-3 border-2 border-[var(--primary)] text-[var(--primary)] font-bold rounded-lg hover:bg-[var(--primary)] hover:text-black transition-all"
+                    >
+                        Login with OTP
+                    </button>
+                </div>
+
             </div>
         </div>
     );

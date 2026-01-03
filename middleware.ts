@@ -1,54 +1,70 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    const response = NextResponse.next();
 
-    const isLoginPage = pathname === "/admin/login" || pathname === "/admin/login/";
+    // Security Headers
+    const headers = response.headers;
 
-    // Protect admin routes and admin API routes
-    if ((pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) && !isLoginPage) {
-        const session = request.cookies.get("admin-session");
+    // Prevent clickjacking attacks
+    headers.set('X-Frame-Options', 'DENY');
 
-        try {
-            if (!session) throw new Error("No session");
+    // Prevent MIME type sniffing
+    headers.set('X-Content-Type-Options', 'nosniff');
 
-            // Robust decoding for URL-encoded cookies
-            const decodedValue = decodeURIComponent(session.value);
-            const decoded = JSON.parse(Buffer.from(decodedValue, "base64").toString("utf-8"));
+    // Enable XSS protection
+    headers.set('X-XSS-Protection', '1; mode=block');
 
-            if (!decoded.authenticated) {
-                throw new Error("Not authenticated");
-            }
-        } catch (error) {
-            // For API requests, return a 401 instead of redirecting
-            if (pathname.startsWith("/api/")) {
-                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-            }
-            return NextResponse.redirect(new URL("/admin/login/", request.url));
-        }
+    // Referrer policy
+    headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+    // Permissions policy
+    headers.set(
+        'Permissions-Policy',
+        'camera=(), microphone=(), geolocation=(self), interest-cohort=()'
+    );
+
+    // Content Security Policy
+    const cspDirectives = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://widget.cloudinary.com https://*.cloudinary.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: https: http:",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com https://*.cloudinary.com",
+        "media-src 'self' https://*.cloudinary.com blob:",
+        "frame-src 'self' https://widget.cloudinary.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "upgrade-insecure-requests"
+    ];
+
+    headers.set('Content-Security-Policy', cspDirectives.join('; '));
+
+    // Strict Transport Security (HTTPS only) - only in production
+    if (process.env.NODE_ENV === 'production') {
+        headers.set(
+            'Strict-Transport-Security',
+            'max-age=31536000; includeSubDomains'
+        );
     }
 
-    // Redirect to dashboard if already logged in
-    if (isLoginPage) {
-        const session = request.cookies.get("admin-session");
-
-        if (session) {
-            try {
-                const decodedValue = decodeURIComponent(session.value);
-                const decoded = JSON.parse(Buffer.from(decodedValue, "base64").toString("utf-8"));
-                if (decoded.authenticated) {
-                    return NextResponse.redirect(new URL("/admin/", request.url));
-                }
-            } catch (e) {
-                // Ignore decoding errors on login page
-            }
-        }
-    }
-
-    return NextResponse.next();
+    return response;
 }
 
+// Apply middleware to all routes except static files
 export const config = {
-    matcher: ["/admin/:path*", "/api/admin/:path*"],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - public folder
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
 };
