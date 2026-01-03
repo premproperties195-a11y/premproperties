@@ -1,11 +1,5 @@
 {
-  "/gallery/page": "app/gallery/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/member/session/route": "app/api/member/session/route.js",
   "/page": "app/page.js",
-  "/admin/gallery/page": "app/admin/gallery/page.js",
-  "/admin/inquiries/page": "app/admin/inquiries/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/team/page": "app/admin/team/page.js"
+  "/api/member/session/route": "app/api/member/session/route.js",
+  "/properties/[id]/page": "app/properties/[id]/page.js"
 }
