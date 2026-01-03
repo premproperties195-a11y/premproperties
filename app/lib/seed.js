@@ -51,14 +51,10 @@ async function seed() {
     // 3. Seed Inquiries
     try {
         const inquiriesData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/inquiries.json'), 'utf8'));
-        const cleanInquiries = inquiriesData.map(i => {
-            const { id, ...rest } = i;
-            return rest;
-        });
-
+        // Keep IDs for inquiries - they're TEXT type, not auto-increment
         const { error: inqError } = await supabase
             .from('inquiries')
-            .insert(cleanInquiries);
+            .insert(inquiriesData);
 
         if (inqError) console.error('Error seeding inquiries:', inqError);
         else console.log('✅ Inquiries seeded');

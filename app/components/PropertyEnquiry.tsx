@@ -28,6 +28,7 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
             const { error } = await supabase
                 .from("inquiries")
                 .insert([{
+                    id: Date.now().toString(),
                     name: formState.name,
                     phone: formState.phone,
                     email: formState.email,

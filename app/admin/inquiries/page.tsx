@@ -17,7 +17,7 @@ import { supabase } from "../../lib/supabase";
 
 export default function InquiriesAdmin() {
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-    const [activeTab, setActiveTab] = useState<"new" | "reviewed">("new");
+    const [activeTab, setActiveTab] = useState<"new" | "contacted">("new");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -45,16 +45,24 @@ export default function InquiriesAdmin() {
 
     const handleStatusUpdate = async (id: string, newStatus: string) => {
         try {
-            const { error: dbError } = await supabase
+            console.log("Updating inquiry status:", { id, newStatus });
+
+            const { data, error: dbError } = await supabase
                 .from("inquiries")
                 .update({ status: newStatus })
-                .eq("id", id);
+                .eq("id", id)
+                .select();
 
-            if (dbError) throw dbError;
+            if (dbError) {
+                console.error("Supabase update error:", dbError);
+                throw dbError;
+            }
+
+            console.log("Status updated successfully:", data);
             setInquiries(inquiries.map(i => i.id === id ? { ...i, status: newStatus } : i));
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error updating inquiry status:", error);
-            alert("Failed to update status");
+            alert(`Failed to update status: ${error.message || 'Unknown error'}\n\nCheck browser console for details.`);
         }
     };
 
@@ -107,10 +115,10 @@ export default function InquiriesAdmin() {
                     New Requests
                 </button>
                 <button
-                    onClick={() => setActiveTab("reviewed")}
-                    className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "reviewed" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
+                    onClick={() => setActiveTab("contacted")}
+                    className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "contacted" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
                 >
-                    Reviewed
+                    Contacted
                 </button>
             </div>
 
@@ -164,10 +172,10 @@ export default function InquiriesAdmin() {
                                         <div className="flex gap-4 justify-end">
                                             {activeTab === "new" ? (
                                                 <button
-                                                    onClick={() => handleStatusUpdate(inquiry.id, "reviewed")}
+                                                    onClick={() => handleStatusUpdate(inquiry.id, "contacted")}
                                                     className="text-green-600 hover:text-green-800 font-bold text-sm"
                                                 >
-                                                    Mark Reviewed
+                                                    Mark Contacted
                                                 </button>
                                             ) : (
                                                 <button
