@@ -39,7 +39,11 @@ interface OTPRecord {
     attempts: number;
 }
 
-const otpStore = new Map<string, OTPRecord>();
+const globalForOTP = global as unknown as { otpStore: Map<string, OTPRecord> };
+
+export const otpStore = globalForOTP.otpStore || new Map<string, OTPRecord>();
+
+if (process.env.NODE_ENV !== 'production') globalForOTP.otpStore = otpStore;
 
 /**
  * Store OTP for email verification
