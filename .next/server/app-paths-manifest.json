@@ -1,9 +1,10 @@
 {
-  "/page": "app/page.js",
   "/forgot-password/page": "app/forgot-password/page.js",
   "/reset-password/page": "app/reset-password/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/api/auth/reset-password/route": "app/api/auth/reset-password/route.js",
+  "/api/verify/route": "app/api/verify/route.js",
+  "/api/admin/users/route": "app/api/admin/users/route.js",
+  "/admin/page": "app/admin/page.js",
   "/admin/login/page": "app/admin/login/page.js",
-  "/admin/members/page": "app/admin/members/page.js"
+  "/admin/users/page": "app/admin/users/page.js"
 }

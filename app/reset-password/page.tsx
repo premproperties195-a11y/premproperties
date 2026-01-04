@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams?.get('token');
@@ -62,83 +62,100 @@ export default function ResetPasswordPage() {
     };
 
     return (
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Reset Password</h1>
+                <p className="text-gray-600">Enter your new password</p>
+            </div>
+
+            {/* Status Messages */}
+            {status.message && (
+                <div className={`mb-6 p-4 rounded-lg ${status.type === 'success'
+                    ? 'bg-green-50 border border-green-200 text-green-800'
+                    : 'bg-red-50 border border-red-200 text-red-800'
+                    }`}>
+                    {status.message}
+                </div>
+            )}
+
+            {/* Form */}
+            {token && status.type !== 'success' && (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                            New Password
+                        </label>
+                        <input
+                            type="password"
+                            required
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                            placeholder="••••••••"
+                            disabled={loading}
+                            minLength={8}
+                        />
+                        <p className="text-xs text-gray-500 mt-2">
+                            Must be at least 8 characters with uppercase, lowercase, and number
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                            Confirm Password
+                        </label>
+                        <input
+                            type="password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                            placeholder="••••••••"
+                            disabled={loading}
+                            minLength={8}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                </form>
+            )}
+
+            {/* Back to Login */}
+            <div className="mt-6 text-center">
+                <button
+                    onClick={() => router.push('/admin/login')}
+                    className="text-sm text-gray-600 hover:text-[var(--primary)] font-medium"
+                >
+                    ← Back to Login
+                </button>
+            </div>
+        </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
         <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Reset Password</h1>
-                        <p className="text-gray-600">Enter your new password</p>
-                    </div>
-
-                    {/* Status Messages */}
-                    {status.message && (
-                        <div className={`mb-6 p-4 rounded-lg ${status.type === 'success'
-                                ? 'bg-green-50 border border-green-200 text-green-800'
-                                : 'bg-red-50 border border-red-200 text-red-800'
-                            }`}>
-                            {status.message}
+                <Suspense fallback={
+                    <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+                        <div className="animate-pulse flex flex-col items-center">
+                            <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
+                            <div className="h-4 w-64 bg-gray-100 rounded mb-8"></div>
+                            <div className="h-12 w-full bg-gray-100 rounded mb-4"></div>
+                            <div className="h-12 w-full bg-gray-100 rounded"></div>
                         </div>
-                    )}
-
-                    {/* Form */}
-                    {token && status.type !== 'success' && (
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    New Password
-                                </label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-                                    placeholder="••••••••"
-                                    disabled={loading}
-                                    minLength={8}
-                                />
-                                <p className="text-xs text-gray-500 mt-2">
-                                    Must be at least 8 characters with uppercase, lowercase, and number
-                                </p>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    Confirm Password
-                                </label>
-                                <input
-                                    type="password"
-                                    required
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
-                                    placeholder="••••••••"
-                                    disabled={loading}
-                                    minLength={8}
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Resetting...' : 'Reset Password'}
-                            </button>
-                        </form>
-                    )}
-
-                    {/* Back to Login */}
-                    <div className="mt-6 text-center">
-                        <button
-                            onClick={() => router.push('/admin/login')}
-                            className="text-sm text-gray-600 hover:text-[var(--primary)] font-medium"
-                        >
-                            ← Back to Login
-                        </button>
                     </div>
-                </div>
+                }>
+                    <ResetPasswordForm />
+                </Suspense>
             </div>
         </main>
     );
