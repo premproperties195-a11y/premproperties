@@ -43,21 +43,14 @@ export async function POST(request: Request) {
         // Create reset link
         const resetLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
 
-        // Send email (implement your email service)
-        console.log(`Password reset link for ${user.email}: ${resetLink}`);
-
-        // TODO: Replace with actual email service
-        // await sendEmail({
-        //     to: user.email,
-        //     subject: 'Reset your PREM Properties password',
-        //     html: `
-        //         <h2>Password Reset Request</h2>
-        //         <p>Click the link below to reset your password:</p>
-        //         <a href="${resetLink}">Reset Password</a>
-        //         <p>This link will expire in 1 hour.</p>
-        //         <p>If you didn't request this, please ignore this email.</p>
-        //     `
-        // });
+        // Send email using real service
+        try {
+            const { sendPasswordResetEmail } = await import('../../../lib/email');
+            await sendPasswordResetEmail(user.email, resetLink);
+        } catch (emailError) {
+            console.error('Failed to send reset email:', emailError);
+            // Still return success to client for security (don't reveal if email was valid or sent)
+        }
 
         return NextResponse.json({
             success: true,

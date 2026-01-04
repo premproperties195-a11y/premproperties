@@ -35,20 +35,17 @@ export async function POST(request: Request) {
         const otp = generateOTP(6);
         storeOTP(user.email, otp, 10); // Valid for 10 minutes
 
-        // Send OTP via email (implement your email service)
-        // For now, log it (REMOVE IN PRODUCTION!)
-        console.log(`OTP for ${user.email}: ${otp}`);
-
-        // TODO: Replace with actual email service
-        // await sendEmail({
-        //     to: user.email,
-        //     subject: 'Your OTP for PREM Properties',
-        //     html: `
-        //         <h2>Login OTP</h2>
-        //         <p>Your OTP is: <strong>${otp}</strong></p>
-        //         <p>This OTP will expire in 10 minutes.</p>
-        //     `
-        // });
+        // Send OTP via real email service
+        try {
+            const { sendOTPEmail } = await import('../../../lib/email');
+            await sendOTPEmail(user.email, otp);
+        } catch (emailError) {
+            console.error('Failed to send OTP email:', emailError);
+            // In dev mode, we still log it for convenience
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`Fallback OTP for ${user.email}: ${otp}`);
+            }
+        }
 
         return NextResponse.json({
             success: true,
