@@ -1,6 +1,5 @@
 {
   "/otp-login/page": "app/otp-login/page.js",
   "/page": "app/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
   "/admin/login/page": "app/admin/login/page.js"
 }

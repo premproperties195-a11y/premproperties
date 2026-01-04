@@ -37,62 +37,63 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }, [user, allNavItems]);
 
     useEffect(() => {
-        const isLoginPage = pathname === "/admin/login" || pathname === "/admin/login/";
-        const cookie = document.cookie.split("; ").find(row => row.startsWith("admin-session="));
+        const checkAuth = async () => {
+            const isLoginPage = pathname === "/admin/login" || pathname === "/admin/login/";
 
-        let isAuthenticated = false;
-        let currentUserData = null;
-
-        if (cookie) {
             try {
-                const value = cookie.substring(cookie.indexOf("=") + 1);
-                const decodedJson = atob(decodeURIComponent(value));
-                currentUserData = JSON.parse(decodedJson);
-                isAuthenticated = !!(currentUserData && currentUserData.authenticated);
+                const res = await fetch('/api/verify');
+                const data = await res.json();
 
-                if (JSON.stringify(user) !== JSON.stringify(currentUserData)) {
-                    setUser(currentUserData);
+                if (data.authenticated) {
+                    setUser(data.user);
+                    setIsLoaded(true);
+
+                    // If we're on login page but already authenticated, go to dashboard
+                    if (isLoginPage) {
+                        router.push('/admin/');
+                        return;
+                    }
+
+                    // Role/Permission checks
+                    if (data.user.role !== "super_admin") {
+                        const allowedPaths = allNavItems.filter(item => {
+                            if (item.role && item.role !== data.user.role) return false;
+                            if (item.permission && item.permission !== "all" && !data.user.permissions?.includes(item.permission)) return false;
+                            return true;
+                        }).map(item => item.href);
+
+                        const currentPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
+                        const isAllowed = allowedPaths.some(path =>
+                            currentPath === path || (path !== "/admin/" && currentPath.startsWith(path))
+                        );
+
+                        if (!isAllowed) {
+                            router.push("/admin/");
+                        }
+                    }
+                } else {
+                    setIsLoaded(true);
+                    if (!isLoginPage) {
+                        router.push("/admin/login/");
+                    }
                 }
-            } catch (e) {
-                console.error("Auth decoding error:", e);
-                isAuthenticated = false;
+            } catch (error) {
+                console.error("Auth check failed:", error);
+                setIsLoaded(true);
+                if (!isLoginPage) {
+                    router.push("/admin/login/");
+                }
             }
-        }
+        };
 
         const loadCompany = async () => {
             const data = await fetchCompanyData();
             setCompany(data);
         };
+
+        checkAuth();
         loadCompany();
-
-        setIsLoaded(true);
-
-        if (!isLoginPage) {
-            if (!isAuthenticated) {
-                router.push("/admin/login/");
-                return;
-            }
-
-            // Enforcement of permissions for sub-admins
-            if (currentUserData && currentUserData.role !== "super_admin") {
-                const allowedPaths = allNavItems.filter(item => {
-                    if (currentUserData.role === "super_admin") return true;
-                    if (item.role && item.role !== currentUserData.role) return false;
-                    if (item.permission && item.permission !== "all" && !currentUserData.permissions?.includes(item.permission)) return false;
-                    return true;
-                }).map(item => item.href);
-
-                const currentPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
-                const isAllowed = allowedPaths.some(path =>
-                    currentPath === path || (path !== "/admin/" && currentPath.startsWith(path))
-                );
-
-                if (!isAllowed) {
-                    router.push("/admin/");
-                }
-            }
-        }
-    }, [pathname, router]); // Optimized dependencies to prevent loops
+    }, [pathname, router, allNavItems]);
 
     const handleLogout = () => {
         document.cookie = "admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
