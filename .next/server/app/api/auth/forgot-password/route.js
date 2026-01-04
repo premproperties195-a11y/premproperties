@@ -33,6 +33,16 @@ module.exports = require("next/dist/compiled/next-server/app-route.runtime.dev.j
 
 /***/ }),
 
+/***/ "child_process":
+/*!********************************!*\
+  !*** external "child_process" ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = require("child_process");
+
+/***/ }),
+
 /***/ "crypto":
 /*!*************************!*\
   !*** external "crypto" ***!
@@ -40,6 +50,136 @@ module.exports = require("next/dist/compiled/next-server/app-route.runtime.dev.j
 /***/ ((module) => {
 
 module.exports = require("crypto");
+
+/***/ }),
+
+/***/ "dns":
+/*!**********************!*\
+  !*** external "dns" ***!
+  \**********************/
+/***/ ((module) => {
+
+module.exports = require("dns");
+
+/***/ }),
+
+/***/ "events":
+/*!*************************!*\
+  !*** external "events" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("events");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ "http":
+/*!***********************!*\
+  !*** external "http" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("http");
+
+/***/ }),
+
+/***/ "https":
+/*!************************!*\
+  !*** external "https" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = require("https");
+
+/***/ }),
+
+/***/ "net":
+/*!**********************!*\
+  !*** external "net" ***!
+  \**********************/
+/***/ ((module) => {
+
+module.exports = require("net");
+
+/***/ }),
+
+/***/ "os":
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("os");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+
+/***/ "stream":
+/*!*************************!*\
+  !*** external "stream" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("stream");
+
+/***/ }),
+
+/***/ "tls":
+/*!**********************!*\
+  !*** external "tls" ***!
+  \**********************/
+/***/ ((module) => {
+
+module.exports = require("tls");
+
+/***/ }),
+
+/***/ "url":
+/*!**********************!*\
+  !*** external "url" ***!
+  \**********************/
+/***/ ((module) => {
+
+module.exports = require("url");
+
+/***/ }),
+
+/***/ "util":
+/*!***********************!*\
+  !*** external "util" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("util");
+
+/***/ }),
+
+/***/ "zlib":
+/*!***********************!*\
+  !*** external "zlib" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("zlib");
 
 /***/ }),
 
@@ -59,7 +199,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   POST: () => (/* binding */ POST)\n/* harmony export */ });\n/* harmony import */ var next_server__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next/server */ \"(rsc)/./node_modules/next/dist/api/server.js\");\n/* harmony import */ var _lib_supabase__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../lib/supabase */ \"(rsc)/./app/lib/supabase.ts\");\n/* harmony import */ var _lib_otp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../lib/otp */ \"(rsc)/./app/lib/otp.ts\");\n/* harmony import */ var _lib_validation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../lib/validation */ \"(rsc)/./app/lib/validation.ts\");\n/* harmony import */ var _lib_tokens__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../lib/tokens */ \"(rsc)/./app/lib/tokens.ts\");\n\n\n\n\n\nasync function POST(request) {\n    try {\n        const { email } = await request.json();\n        // Validate email\n        const emailValidation = (0,_lib_validation__WEBPACK_IMPORTED_MODULE_3__.validateEmail)(email);\n        if (!emailValidation.isValid) {\n            return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n                error: emailValidation.error\n            }, {\n                status: 400\n            });\n        }\n        // Check if user exists\n        const { data: user, error } = await _lib_supabase__WEBPACK_IMPORTED_MODULE_1__.supabase.from(\"admin_users\").select(\"email, username\").eq(\"email\", emailValidation.sanitized).single();\n        if (error || !user) {\n            // For security, don't reveal if email exists\n            return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n                success: true,\n                message: \"If your email is registered, you will receive password reset instructions.\"\n            });\n        }\n        // Generate reset token\n        const { token, expiry } = (0,_lib_otp__WEBPACK_IMPORTED_MODULE_2__.generateResetToken)();\n        _lib_tokens__WEBPACK_IMPORTED_MODULE_4__.resetTokens.set(token, {\n            email: user.email,\n            expiry\n        });\n        // Create reset link\n        const resetLink = `${process.env.NEXT_PUBLIC_SITE_URL || \"http://localhost:3000\"}/reset-password?token=${token}`;\n        // Send email (implement your email service)\n        console.log(`Password reset link for ${user.email}: ${resetLink}`);\n        // TODO: Replace with actual email service\n        // await sendEmail({\n        //     to: user.email,\n        //     subject: 'Reset your PREM Properties password',\n        //     html: `\n        //         <h2>Password Reset Request</h2>\n        //         <p>Click the link below to reset your password:</p>\n        //         <a href=\"${resetLink}\">Reset Password</a>\n        //         <p>This link will expire in 1 hour.</p>\n        //         <p>If you didn't request this, please ignore this email.</p>\n        //     `\n        // });\n        return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n            success: true,\n            message: \"Password reset link sent to your email\",\n            // DEVELOPMENT ONLY\n            devToken:  true ? token : 0\n        });\n    } catch (error) {\n        console.error(\"Forgot password error:\", error);\n        return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n            error: \"Failed to process request\"\n        }, {\n            status: 500\n        });\n    }\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHJzYykvLi9hcHAvYXBpL2F1dGgvZm9yZ290LXBhc3N3b3JkL3JvdXRlLnRzIiwibWFwcGluZ3MiOiI7Ozs7Ozs7OztBQUEyQztBQUNNO0FBQ0s7QUFDRTtBQUNOO0FBRzNDLGVBQWVLLEtBQUtDLE9BQWdCO0lBQ3ZDLElBQUk7UUFDQSxNQUFNLEVBQUVDLEtBQUssRUFBRSxHQUFHLE1BQU1ELFFBQVFFLElBQUk7UUFFcEMsaUJBQWlCO1FBQ2pCLE1BQU1DLGtCQUFrQk4sOERBQWFBLENBQUNJO1FBQ3RDLElBQUksQ0FBQ0UsZ0JBQWdCQyxPQUFPLEVBQUU7WUFDMUIsT0FBT1YscURBQVlBLENBQUNRLElBQUksQ0FDcEI7Z0JBQUVHLE9BQU9GLGdCQUFnQkUsS0FBSztZQUFDLEdBQy9CO2dCQUFFQyxRQUFRO1lBQUk7UUFFdEI7UUFFQSx1QkFBdUI7UUFDdkIsTUFBTSxFQUFFQyxNQUFNQyxJQUFJLEVBQUVILEtBQUssRUFBRSxHQUFHLE1BQU1WLG1EQUFRQSxDQUN2Q2MsSUFBSSxDQUFDLGVBQ0xDLE1BQU0sQ0FBQyxtQkFDUEMsRUFBRSxDQUFDLFNBQVNSLGdCQUFnQlMsU0FBUyxFQUNyQ0MsTUFBTTtRQUVYLElBQUlSLFNBQVMsQ0FBQ0csTUFBTTtZQUNoQiw2Q0FBNkM7WUFDN0MsT0FBT2QscURBQVlBLENBQUNRLElBQUksQ0FBQztnQkFDckJZLFNBQVM7Z0JBQ1RDLFNBQVM7WUFDYjtRQUNKO1FBRUEsdUJBQXVCO1FBQ3ZCLE1BQU0sRUFBRUMsS0FBSyxFQUFFQyxNQUFNLEVBQUUsR0FBR3JCLDREQUFrQkE7UUFDNUNFLG9EQUFXQSxDQUFDb0IsR0FBRyxDQUFDRixPQUFPO1lBQ25CZixPQUFPTyxLQUFLUCxLQUFLO1lBQ2pCZ0I7UUFDSjtRQUVBLG9CQUFvQjtRQUNwQixNQUFNRSxZQUFZLENBQUMsRUFBRUMsUUFBUUMsR0FBRyxDQUFDQyxvQkFBb0IsSUFBSSx3QkFBd0Isc0JBQXNCLEVBQUVOLE1BQU0sQ0FBQztRQUVoSCw0Q0FBNEM7UUFDNUNPLFFBQVFDLEdBQUcsQ0FBQyxDQUFDLHdCQUF3QixFQUFFaEIsS0FBS1AsS0FBSyxDQUFDLEVBQUUsRUFBRWtCLFVBQVUsQ0FBQztRQUVqRSwwQ0FBMEM7UUFDMUMsb0JBQW9CO1FBQ3BCLHNCQUFzQjtRQUN0QixzREFBc0Q7UUFDdEQsY0FBYztRQUNkLDBDQUEwQztRQUMxQyw4REFBOEQ7UUFDOUQsb0RBQW9EO1FBQ3BELGtEQUFrRDtRQUNsRCx1RUFBdUU7UUFDdkUsUUFBUTtRQUNSLE1BQU07UUFFTixPQUFPekIscURBQVlBLENBQUNRLElBQUksQ0FBQztZQUNyQlksU0FBUztZQUNUQyxTQUFTO1lBQ1QsbUJBQW1CO1lBQ25CVSxVQUFVTCxLQUF5QixHQUFnQkosUUFBUVUsQ0FBU0E7UUFDeEU7SUFFSixFQUFFLE9BQU9yQixPQUFPO1FBQ1prQixRQUFRbEIsS0FBSyxDQUFDLDBCQUEwQkE7UUFDeEMsT0FBT1gscURBQVlBLENBQUNRLElBQUksQ0FDcEI7WUFBRUcsT0FBTztRQUE0QixHQUNyQztZQUFFQyxRQUFRO1FBQUk7SUFFdEI7QUFDSiIsInNvdXJjZXMiOlsid2VicGFjazovL3JlYWwtZXN0YXRlLWZyb250ZW5kLy4vYXBwL2FwaS9hdXRoL2ZvcmdvdC1wYXNzd29yZC9yb3V0ZS50cz8zYmJjIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IE5leHRSZXNwb25zZSB9IGZyb20gJ25leHQvc2VydmVyJztcclxuaW1wb3J0IHsgc3VwYWJhc2UgfSBmcm9tICcuLi8uLi8uLi9saWIvc3VwYWJhc2UnO1xyXG5pbXBvcnQgeyBnZW5lcmF0ZVJlc2V0VG9rZW4gfSBmcm9tICcuLi8uLi8uLi9saWIvb3RwJztcclxuaW1wb3J0IHsgdmFsaWRhdGVFbWFpbCB9IGZyb20gJy4uLy4uLy4uL2xpYi92YWxpZGF0aW9uJztcclxuaW1wb3J0IHsgcmVzZXRUb2tlbnMgfSBmcm9tICcuLi8uLi8uLi9saWIvdG9rZW5zJztcclxuXHJcblxyXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gUE9TVChyZXF1ZXN0OiBSZXF1ZXN0KSB7XHJcbiAgICB0cnkge1xyXG4gICAgICAgIGNvbnN0IHsgZW1haWwgfSA9IGF3YWl0IHJlcXVlc3QuanNvbigpO1xyXG5cclxuICAgICAgICAvLyBWYWxpZGF0ZSBlbWFpbFxyXG4gICAgICAgIGNvbnN0IGVtYWlsVmFsaWRhdGlvbiA9IHZhbGlkYXRlRW1haWwoZW1haWwpO1xyXG4gICAgICAgIGlmICghZW1haWxWYWxpZGF0aW9uLmlzVmFsaWQpIHtcclxuICAgICAgICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKFxyXG4gICAgICAgICAgICAgICAgeyBlcnJvcjogZW1haWxWYWxpZGF0aW9uLmVycm9yIH0sXHJcbiAgICAgICAgICAgICAgICB7IHN0YXR1czogNDAwIH1cclxuICAgICAgICAgICAgKTtcclxuICAgICAgICB9XHJcblxyXG4gICAgICAgIC8vIENoZWNrIGlmIHVzZXIgZXhpc3RzXHJcbiAgICAgICAgY29uc3QgeyBkYXRhOiB1c2VyLCBlcnJvciB9ID0gYXdhaXQgc3VwYWJhc2VcclxuICAgICAgICAgICAgLmZyb20oJ2FkbWluX3VzZXJzJylcclxuICAgICAgICAgICAgLnNlbGVjdCgnZW1haWwsIHVzZXJuYW1lJylcclxuICAgICAgICAgICAgLmVxKCdlbWFpbCcsIGVtYWlsVmFsaWRhdGlvbi5zYW5pdGl6ZWQpXHJcbiAgICAgICAgICAgIC5zaW5nbGUoKTtcclxuXHJcbiAgICAgICAgaWYgKGVycm9yIHx8ICF1c2VyKSB7XHJcbiAgICAgICAgICAgIC8vIEZvciBzZWN1cml0eSwgZG9uJ3QgcmV2ZWFsIGlmIGVtYWlsIGV4aXN0c1xyXG4gICAgICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oe1xyXG4gICAgICAgICAgICAgICAgc3VjY2VzczogdHJ1ZSxcclxuICAgICAgICAgICAgICAgIG1lc3NhZ2U6ICdJZiB5b3VyIGVtYWlsIGlzIHJlZ2lzdGVyZWQsIHlvdSB3aWxsIHJlY2VpdmUgcGFzc3dvcmQgcmVzZXQgaW5zdHJ1Y3Rpb25zLidcclxuICAgICAgICAgICAgfSk7XHJcbiAgICAgICAgfVxyXG5cclxuICAgICAgICAvLyBHZW5lcmF0ZSByZXNldCB0b2tlblxyXG4gICAgICAgIGNvbnN0IHsgdG9rZW4sIGV4cGlyeSB9ID0gZ2VuZXJhdGVSZXNldFRva2VuKCk7XHJcbiAgICAgICAgcmVzZXRUb2tlbnMuc2V0KHRva2VuLCB7XHJcbiAgICAgICAgICAgIGVtYWlsOiB1c2VyLmVtYWlsLFxyXG4gICAgICAgICAgICBleHBpcnlcclxuICAgICAgICB9KTtcclxuXHJcbiAgICAgICAgLy8gQ3JlYXRlIHJlc2V0IGxpbmtcclxuICAgICAgICBjb25zdCByZXNldExpbmsgPSBgJHtwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19TSVRFX1VSTCB8fCAnaHR0cDovL2xvY2FsaG9zdDozMDAwJ30vcmVzZXQtcGFzc3dvcmQ/dG9rZW49JHt0b2tlbn1gO1xyXG5cclxuICAgICAgICAvLyBTZW5kIGVtYWlsIChpbXBsZW1lbnQgeW91ciBlbWFpbCBzZXJ2aWNlKVxyXG4gICAgICAgIGNvbnNvbGUubG9nKGBQYXNzd29yZCByZXNldCBsaW5rIGZvciAke3VzZXIuZW1haWx9OiAke3Jlc2V0TGlua31gKTtcclxuXHJcbiAgICAgICAgLy8gVE9ETzogUmVwbGFjZSB3aXRoIGFjdHVhbCBlbWFpbCBzZXJ2aWNlXHJcbiAgICAgICAgLy8gYXdhaXQgc2VuZEVtYWlsKHtcclxuICAgICAgICAvLyAgICAgdG86IHVzZXIuZW1haWwsXHJcbiAgICAgICAgLy8gICAgIHN1YmplY3Q6ICdSZXNldCB5b3VyIFBSRU0gUHJvcGVydGllcyBwYXNzd29yZCcsXHJcbiAgICAgICAgLy8gICAgIGh0bWw6IGBcclxuICAgICAgICAvLyAgICAgICAgIDxoMj5QYXNzd29yZCBSZXNldCBSZXF1ZXN0PC9oMj5cclxuICAgICAgICAvLyAgICAgICAgIDxwPkNsaWNrIHRoZSBsaW5rIGJlbG93IHRvIHJlc2V0IHlvdXIgcGFzc3dvcmQ6PC9wPlxyXG4gICAgICAgIC8vICAgICAgICAgPGEgaHJlZj1cIiR7cmVzZXRMaW5rfVwiPlJlc2V0IFBhc3N3b3JkPC9hPlxyXG4gICAgICAgIC8vICAgICAgICAgPHA+VGhpcyBsaW5rIHdpbGwgZXhwaXJlIGluIDEgaG91ci48L3A+XHJcbiAgICAgICAgLy8gICAgICAgICA8cD5JZiB5b3UgZGlkbid0IHJlcXVlc3QgdGhpcywgcGxlYXNlIGlnbm9yZSB0aGlzIGVtYWlsLjwvcD5cclxuICAgICAgICAvLyAgICAgYFxyXG4gICAgICAgIC8vIH0pO1xyXG5cclxuICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oe1xyXG4gICAgICAgICAgICBzdWNjZXNzOiB0cnVlLFxyXG4gICAgICAgICAgICBtZXNzYWdlOiAnUGFzc3dvcmQgcmVzZXQgbGluayBzZW50IHRvIHlvdXIgZW1haWwnLFxyXG4gICAgICAgICAgICAvLyBERVZFTE9QTUVOVCBPTkxZXHJcbiAgICAgICAgICAgIGRldlRva2VuOiBwcm9jZXNzLmVudi5OT0RFX0VOViA9PT0gJ2RldmVsb3BtZW50JyA/IHRva2VuIDogdW5kZWZpbmVkXHJcbiAgICAgICAgfSk7XHJcblxyXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgICBjb25zb2xlLmVycm9yKCdGb3Jnb3QgcGFzc3dvcmQgZXJyb3I6JywgZXJyb3IpO1xyXG4gICAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbihcclxuICAgICAgICAgICAgeyBlcnJvcjogJ0ZhaWxlZCB0byBwcm9jZXNzIHJlcXVlc3QnIH0sXHJcbiAgICAgICAgICAgIHsgc3RhdHVzOiA1MDAgfVxyXG4gICAgICAgICk7XHJcbiAgICB9XHJcbn1cclxuXHJcblxyXG4iXSwibmFtZXMiOlsiTmV4dFJlc3BvbnNlIiwic3VwYWJhc2UiLCJnZW5lcmF0ZVJlc2V0VG9rZW4iLCJ2YWxpZGF0ZUVtYWlsIiwicmVzZXRUb2tlbnMiLCJQT1NUIiwicmVxdWVzdCIsImVtYWlsIiwianNvbiIsImVtYWlsVmFsaWRhdGlvbiIsImlzVmFsaWQiLCJlcnJvciIsInN0YXR1cyIsImRhdGEiLCJ1c2VyIiwiZnJvbSIsInNlbGVjdCIsImVxIiwic2FuaXRpemVkIiwic2luZ2xlIiwic3VjY2VzcyIsIm1lc3NhZ2UiLCJ0b2tlbiIsImV4cGlyeSIsInNldCIsInJlc2V0TGluayIsInByb2Nlc3MiLCJlbnYiLCJORVhUX1BVQkxJQ19TSVRFX1VSTCIsImNvbnNvbGUiLCJsb2ciLCJkZXZUb2tlbiIsInVuZGVmaW5lZCJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(rsc)/./app/api/auth/forgot-password/route.ts\n");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   POST: () => (/* binding */ POST)\n/* harmony export */ });\n/* harmony import */ var next_server__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next/server */ \"(rsc)/./node_modules/next/dist/api/server.js\");\n/* harmony import */ var _lib_supabase__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../lib/supabase */ \"(rsc)/./app/lib/supabase.ts\");\n/* harmony import */ var _lib_otp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../lib/otp */ \"(rsc)/./app/lib/otp.ts\");\n/* harmony import */ var _lib_validation__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../lib/validation */ \"(rsc)/./app/lib/validation.ts\");\n/* harmony import */ var _lib_tokens__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../lib/tokens */ \"(rsc)/./app/lib/tokens.ts\");\n\n\n\n\n\nasync function POST(request) {\n    try {\n        const { email } = await request.json();\n        // Validate email\n        const emailValidation = (0,_lib_validation__WEBPACK_IMPORTED_MODULE_3__.validateEmail)(email);\n        if (!emailValidation.isValid) {\n            return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n                error: emailValidation.error\n            }, {\n                status: 400\n            });\n        }\n        // Check if user exists\n        const { data: user, error } = await _lib_supabase__WEBPACK_IMPORTED_MODULE_1__.supabase.from(\"admin_users\").select(\"email, username\").eq(\"email\", emailValidation.sanitized).single();\n        if (error || !user) {\n            // For security, don't reveal if email exists\n            return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n                success: true,\n                message: \"If your email is registered, you will receive password reset instructions.\"\n            });\n        }\n        // Generate reset token\n        const { token, expiry } = (0,_lib_otp__WEBPACK_IMPORTED_MODULE_2__.generateResetToken)();\n        _lib_tokens__WEBPACK_IMPORTED_MODULE_4__.resetTokens.set(token, {\n            email: user.email,\n            expiry\n        });\n        // Create reset link\n        const resetLink = `${process.env.NEXT_PUBLIC_SITE_URL || \"http://localhost:3000\"}/reset-password?token=${token}`;\n        // Send email using real service\n        try {\n            const { sendPasswordResetEmail } = await Promise.all(/*! import() */[__webpack_require__.e(\"vendor-chunks/nodemailer\"), __webpack_require__.e(\"_rsc_app_lib_email_ts\")]).then(__webpack_require__.bind(__webpack_require__, /*! ../../../lib/email */ \"(rsc)/./app/lib/email.ts\"));\n            await sendPasswordResetEmail(user.email, resetLink);\n        } catch (emailError) {\n            console.error(\"Failed to send reset email:\", emailError);\n        // Still return success to client for security (don't reveal if email was valid or sent)\n        }\n        return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n            success: true,\n            message: \"Password reset link sent to your email\",\n            // DEVELOPMENT ONLY\n            devToken:  true ? token : 0\n        });\n    } catch (error) {\n        console.error(\"Forgot password error:\", error);\n        return next_server__WEBPACK_IMPORTED_MODULE_0__.NextResponse.json({\n            error: \"Failed to process request\"\n        }, {\n            status: 500\n        });\n    }\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHJzYykvLi9hcHAvYXBpL2F1dGgvZm9yZ290LXBhc3N3b3JkL3JvdXRlLnRzIiwibWFwcGluZ3MiOiI7Ozs7Ozs7OztBQUEyQztBQUNNO0FBQ0s7QUFDRTtBQUNOO0FBRzNDLGVBQWVLLEtBQUtDLE9BQWdCO0lBQ3ZDLElBQUk7UUFDQSxNQUFNLEVBQUVDLEtBQUssRUFBRSxHQUFHLE1BQU1ELFFBQVFFLElBQUk7UUFFcEMsaUJBQWlCO1FBQ2pCLE1BQU1DLGtCQUFrQk4sOERBQWFBLENBQUNJO1FBQ3RDLElBQUksQ0FBQ0UsZ0JBQWdCQyxPQUFPLEVBQUU7WUFDMUIsT0FBT1YscURBQVlBLENBQUNRLElBQUksQ0FDcEI7Z0JBQUVHLE9BQU9GLGdCQUFnQkUsS0FBSztZQUFDLEdBQy9CO2dCQUFFQyxRQUFRO1lBQUk7UUFFdEI7UUFFQSx1QkFBdUI7UUFDdkIsTUFBTSxFQUFFQyxNQUFNQyxJQUFJLEVBQUVILEtBQUssRUFBRSxHQUFHLE1BQU1WLG1EQUFRQSxDQUN2Q2MsSUFBSSxDQUFDLGVBQ0xDLE1BQU0sQ0FBQyxtQkFDUEMsRUFBRSxDQUFDLFNBQVNSLGdCQUFnQlMsU0FBUyxFQUNyQ0MsTUFBTTtRQUVYLElBQUlSLFNBQVMsQ0FBQ0csTUFBTTtZQUNoQiw2Q0FBNkM7WUFDN0MsT0FBT2QscURBQVlBLENBQUNRLElBQUksQ0FBQztnQkFDckJZLFNBQVM7Z0JBQ1RDLFNBQVM7WUFDYjtRQUNKO1FBRUEsdUJBQXVCO1FBQ3ZCLE1BQU0sRUFBRUMsS0FBSyxFQUFFQyxNQUFNLEVBQUUsR0FBR3JCLDREQUFrQkE7UUFDNUNFLG9EQUFXQSxDQUFDb0IsR0FBRyxDQUFDRixPQUFPO1lBQ25CZixPQUFPTyxLQUFLUCxLQUFLO1lBQ2pCZ0I7UUFDSjtRQUVBLG9CQUFvQjtRQUNwQixNQUFNRSxZQUFZLENBQUMsRUFBRUMsUUFBUUMsR0FBRyxDQUFDQyxvQkFBb0IsSUFBSSx3QkFBd0Isc0JBQXNCLEVBQUVOLE1BQU0sQ0FBQztRQUVoSCxnQ0FBZ0M7UUFDaEMsSUFBSTtZQUNBLE1BQU0sRUFBRU8sc0JBQXNCLEVBQUUsR0FBRyxNQUFNLHlPQUFPO1lBQ2hELE1BQU1BLHVCQUF1QmYsS0FBS1AsS0FBSyxFQUFFa0I7UUFDN0MsRUFBRSxPQUFPSyxZQUFZO1lBQ2pCQyxRQUFRcEIsS0FBSyxDQUFDLCtCQUErQm1CO1FBQzdDLHdGQUF3RjtRQUM1RjtRQUVBLE9BQU85QixxREFBWUEsQ0FBQ1EsSUFBSSxDQUFDO1lBQ3JCWSxTQUFTO1lBQ1RDLFNBQVM7WUFDVCxtQkFBbUI7WUFDbkJXLFVBQVVOLEtBQXlCLEdBQWdCSixRQUFRVyxDQUFTQTtRQUN4RTtJQUVKLEVBQUUsT0FBT3RCLE9BQU87UUFDWm9CLFFBQVFwQixLQUFLLENBQUMsMEJBQTBCQTtRQUN4QyxPQUFPWCxxREFBWUEsQ0FBQ1EsSUFBSSxDQUNwQjtZQUFFRyxPQUFPO1FBQTRCLEdBQ3JDO1lBQUVDLFFBQVE7UUFBSTtJQUV0QjtBQUNKIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vcmVhbC1lc3RhdGUtZnJvbnRlbmQvLi9hcHAvYXBpL2F1dGgvZm9yZ290LXBhc3N3b3JkL3JvdXRlLnRzPzNiYmMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTmV4dFJlc3BvbnNlIH0gZnJvbSAnbmV4dC9zZXJ2ZXInO1xyXG5pbXBvcnQgeyBzdXBhYmFzZSB9IGZyb20gJy4uLy4uLy4uL2xpYi9zdXBhYmFzZSc7XHJcbmltcG9ydCB7IGdlbmVyYXRlUmVzZXRUb2tlbiB9IGZyb20gJy4uLy4uLy4uL2xpYi9vdHAnO1xyXG5pbXBvcnQgeyB2YWxpZGF0ZUVtYWlsIH0gZnJvbSAnLi4vLi4vLi4vbGliL3ZhbGlkYXRpb24nO1xyXG5pbXBvcnQgeyByZXNldFRva2VucyB9IGZyb20gJy4uLy4uLy4uL2xpYi90b2tlbnMnO1xyXG5cclxuXHJcbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBQT1NUKHJlcXVlc3Q6IFJlcXVlc3QpIHtcclxuICAgIHRyeSB7XHJcbiAgICAgICAgY29uc3QgeyBlbWFpbCB9ID0gYXdhaXQgcmVxdWVzdC5qc29uKCk7XHJcblxyXG4gICAgICAgIC8vIFZhbGlkYXRlIGVtYWlsXHJcbiAgICAgICAgY29uc3QgZW1haWxWYWxpZGF0aW9uID0gdmFsaWRhdGVFbWFpbChlbWFpbCk7XHJcbiAgICAgICAgaWYgKCFlbWFpbFZhbGlkYXRpb24uaXNWYWxpZCkge1xyXG4gICAgICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oXHJcbiAgICAgICAgICAgICAgICB7IGVycm9yOiBlbWFpbFZhbGlkYXRpb24uZXJyb3IgfSxcclxuICAgICAgICAgICAgICAgIHsgc3RhdHVzOiA0MDAgfVxyXG4gICAgICAgICAgICApO1xyXG4gICAgICAgIH1cclxuXHJcbiAgICAgICAgLy8gQ2hlY2sgaWYgdXNlciBleGlzdHNcclxuICAgICAgICBjb25zdCB7IGRhdGE6IHVzZXIsIGVycm9yIH0gPSBhd2FpdCBzdXBhYmFzZVxyXG4gICAgICAgICAgICAuZnJvbSgnYWRtaW5fdXNlcnMnKVxyXG4gICAgICAgICAgICAuc2VsZWN0KCdlbWFpbCwgdXNlcm5hbWUnKVxyXG4gICAgICAgICAgICAuZXEoJ2VtYWlsJywgZW1haWxWYWxpZGF0aW9uLnNhbml0aXplZClcclxuICAgICAgICAgICAgLnNpbmdsZSgpO1xyXG5cclxuICAgICAgICBpZiAoZXJyb3IgfHwgIXVzZXIpIHtcclxuICAgICAgICAgICAgLy8gRm9yIHNlY3VyaXR5LCBkb24ndCByZXZlYWwgaWYgZW1haWwgZXhpc3RzXHJcbiAgICAgICAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7XHJcbiAgICAgICAgICAgICAgICBzdWNjZXNzOiB0cnVlLFxyXG4gICAgICAgICAgICAgICAgbWVzc2FnZTogJ0lmIHlvdXIgZW1haWwgaXMgcmVnaXN0ZXJlZCwgeW91IHdpbGwgcmVjZWl2ZSBwYXNzd29yZCByZXNldCBpbnN0cnVjdGlvbnMuJ1xyXG4gICAgICAgICAgICB9KTtcclxuICAgICAgICB9XHJcblxyXG4gICAgICAgIC8vIEdlbmVyYXRlIHJlc2V0IHRva2VuXHJcbiAgICAgICAgY29uc3QgeyB0b2tlbiwgZXhwaXJ5IH0gPSBnZW5lcmF0ZVJlc2V0VG9rZW4oKTtcclxuICAgICAgICByZXNldFRva2Vucy5zZXQodG9rZW4sIHtcclxuICAgICAgICAgICAgZW1haWw6IHVzZXIuZW1haWwsXHJcbiAgICAgICAgICAgIGV4cGlyeVxyXG4gICAgICAgIH0pO1xyXG5cclxuICAgICAgICAvLyBDcmVhdGUgcmVzZXQgbGlua1xyXG4gICAgICAgIGNvbnN0IHJlc2V0TGluayA9IGAke3Byb2Nlc3MuZW52Lk5FWFRfUFVCTElDX1NJVEVfVVJMIHx8ICdodHRwOi8vbG9jYWxob3N0OjMwMDAnfS9yZXNldC1wYXNzd29yZD90b2tlbj0ke3Rva2VufWA7XHJcblxyXG4gICAgICAgIC8vIFNlbmQgZW1haWwgdXNpbmcgcmVhbCBzZXJ2aWNlXHJcbiAgICAgICAgdHJ5IHtcclxuICAgICAgICAgICAgY29uc3QgeyBzZW5kUGFzc3dvcmRSZXNldEVtYWlsIH0gPSBhd2FpdCBpbXBvcnQoJy4uLy4uLy4uL2xpYi9lbWFpbCcpO1xyXG4gICAgICAgICAgICBhd2FpdCBzZW5kUGFzc3dvcmRSZXNldEVtYWlsKHVzZXIuZW1haWwsIHJlc2V0TGluayk7XHJcbiAgICAgICAgfSBjYXRjaCAoZW1haWxFcnJvcikge1xyXG4gICAgICAgICAgICBjb25zb2xlLmVycm9yKCdGYWlsZWQgdG8gc2VuZCByZXNldCBlbWFpbDonLCBlbWFpbEVycm9yKTtcclxuICAgICAgICAgICAgLy8gU3RpbGwgcmV0dXJuIHN1Y2Nlc3MgdG8gY2xpZW50IGZvciBzZWN1cml0eSAoZG9uJ3QgcmV2ZWFsIGlmIGVtYWlsIHdhcyB2YWxpZCBvciBzZW50KVxyXG4gICAgICAgIH1cclxuXHJcbiAgICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKHtcclxuICAgICAgICAgICAgc3VjY2VzczogdHJ1ZSxcclxuICAgICAgICAgICAgbWVzc2FnZTogJ1Bhc3N3b3JkIHJlc2V0IGxpbmsgc2VudCB0byB5b3VyIGVtYWlsJyxcclxuICAgICAgICAgICAgLy8gREVWRUxPUE1FTlQgT05MWVxyXG4gICAgICAgICAgICBkZXZUb2tlbjogcHJvY2Vzcy5lbnYuTk9ERV9FTlYgPT09ICdkZXZlbG9wbWVudCcgPyB0b2tlbiA6IHVuZGVmaW5lZFxyXG4gICAgICAgIH0pO1xyXG5cclxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgICAgY29uc29sZS5lcnJvcignRm9yZ290IHBhc3N3b3JkIGVycm9yOicsIGVycm9yKTtcclxuICAgICAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oXHJcbiAgICAgICAgICAgIHsgZXJyb3I6ICdGYWlsZWQgdG8gcHJvY2VzcyByZXF1ZXN0JyB9LFxyXG4gICAgICAgICAgICB7IHN0YXR1czogNTAwIH1cclxuICAgICAgICApO1xyXG4gICAgfVxyXG59XHJcblxyXG5cclxuIl0sIm5hbWVzIjpbIk5leHRSZXNwb25zZSIsInN1cGFiYXNlIiwiZ2VuZXJhdGVSZXNldFRva2VuIiwidmFsaWRhdGVFbWFpbCIsInJlc2V0VG9rZW5zIiwiUE9TVCIsInJlcXVlc3QiLCJlbWFpbCIsImpzb24iLCJlbWFpbFZhbGlkYXRpb24iLCJpc1ZhbGlkIiwiZXJyb3IiLCJzdGF0dXMiLCJkYXRhIiwidXNlciIsImZyb20iLCJzZWxlY3QiLCJlcSIsInNhbml0aXplZCIsInNpbmdsZSIsInN1Y2Nlc3MiLCJtZXNzYWdlIiwidG9rZW4iLCJleHBpcnkiLCJzZXQiLCJyZXNldExpbmsiLCJwcm9jZXNzIiwiZW52IiwiTkVYVF9QVUJMSUNfU0lURV9VUkwiLCJzZW5kUGFzc3dvcmRSZXNldEVtYWlsIiwiZW1haWxFcnJvciIsImNvbnNvbGUiLCJkZXZUb2tlbiIsInVuZGVmaW5lZCJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(rsc)/./app/api/auth/forgot-password/route.ts\n");
 
 /***/ }),
 
@@ -110,7 +250,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 var __webpack_require__ = require("../../../../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/@supabase","vendor-chunks/tslib","vendor-chunks/iceberg-js","vendor-chunks/validator"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fauth%2Fforgot-password%2Froute&page=%2Fapi%2Fauth%2Fforgot-password%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2Fforgot-password%2Froute.ts&appDir=C%3A%5CUsers%5Csridh%5COneDrive%5CDesktop%5Creal-estate-project%5Cfrontend%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5Csridh%5COneDrive%5CDesktop%5Creal-estate-project%5Cfrontend&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
+var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/@supabase","vendor-chunks/next","vendor-chunks/tslib","vendor-chunks/iceberg-js","vendor-chunks/validator"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fauth%2Fforgot-password%2Froute&page=%2Fapi%2Fauth%2Fforgot-password%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2Fforgot-password%2Froute.ts&appDir=C%3A%5CUsers%5Csridh%5COneDrive%5CDesktop%5Creal-estate-project%5Cfrontend%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CUsers%5Csridh%5COneDrive%5CDesktop%5Creal-estate-project%5Cfrontend&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
 module.exports = __webpack_exports__;
 
 })();

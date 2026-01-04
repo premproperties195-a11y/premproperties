@@ -29,18 +29,6 @@ export default function ForgotPasswordPage() {
                     type: 'success',
                     message: data.message
                 });
-
-                // Show dev token in development
-                if (data.devToken) {
-                    setDevToken(data.devToken);
-                }
-
-                // Redirect to reset password page after 3 seconds
-                setTimeout(() => {
-                    if (data.devToken) {
-                        router.push(`/reset-password?token=${data.devToken}`);
-                    }
-                }, 3000);
             } else {
                 setStatus({ type: 'error', message: data.error || 'Failed to send reset email' });
             }
@@ -64,8 +52,8 @@ export default function ForgotPasswordPage() {
                     {/* Status Messages */}
                     {status.message && (
                         <div className={`mb-6 p-4 rounded-lg ${status.type === 'success'
-                                ? 'bg-green-50 border border-green-200 text-green-800'
-                                : 'bg-red-50 border border-red-200 text-red-800'
+                            ? 'bg-green-50 border border-green-200 text-green-800'
+                            : 'bg-red-50 border border-red-200 text-red-800'
                             }`}>
                             {status.message}
                         </div>

@@ -54,9 +54,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             success: true,
-            message: 'Password reset link sent to your email',
-            // DEVELOPMENT ONLY
-            devToken: process.env.NODE_ENV === 'development' ? token : undefined
+            message: 'If your email is registered, you will receive a reset link shortly.'
         });
 
     } catch (error) {
