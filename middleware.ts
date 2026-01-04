@@ -38,9 +38,13 @@ export function middleware(request: NextRequest) {
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
-        "frame-ancestors 'none'",
-        "upgrade-insecure-requests"
+        "frame-ancestors 'none'"
     ];
+
+    // Only upgrade insecure requests in production
+    if (process.env.NODE_ENV === 'production') {
+        cspDirectives.push("upgrade-insecure-requests");
+    }
 
     headers.set('Content-Security-Policy', cspDirectives.join('; '));
 
