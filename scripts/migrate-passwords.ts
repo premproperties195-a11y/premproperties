@@ -1,5 +1,12 @@
-import { hashPassword } from './lib/password';
+import { hashPassword } from '../app/lib/password';
 import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables from .env.local
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+// Fallback to .env if .env.local doesn't exist or is missing values
+dotenv.config();
 
 /**
  * Script to migrate plain text passwords to bcrypt hashed passwords

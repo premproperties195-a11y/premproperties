@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/otp-login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/otp-login/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -20,11 +20,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
-    ],
-    "/properties/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/properties/[id]/page.js"
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
