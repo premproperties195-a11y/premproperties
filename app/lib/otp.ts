@@ -106,11 +106,11 @@ export function verifyOTP(email: string, otp: string): { success: boolean; messa
 export function cleanupExpiredOTPs(): void {
     const now = new Date();
 
-    for (const [email, record] of otpStore.entries()) {
+    otpStore.forEach((record, email) => {
         if (now > record.expiry) {
             otpStore.delete(email);
         }
-    }
+    });
 }
 
 // Run cleanup every 5 minutes
