@@ -1,5 +1,8 @@
 {
   "/otp-login/page": "app/otp-login/page.js",
+  "/api/verify/route": "app/api/verify/route.js",
   "/page": "app/page.js",
-  "/admin/login/page": "app/admin/login/page.js"
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/members/page": "app/admin/members/page.js",
+  "/admin/page": "app/admin/page.js"
 }

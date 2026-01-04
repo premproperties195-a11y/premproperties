@@ -95,10 +95,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         loadCompany();
     }, [pathname, router, allNavItems]);
 
-    const handleLogout = () => {
-        document.cookie = "admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-        setUser(null);
-        router.push("/admin/login/");
+    const handleLogout = async () => {
+        try {
+            await fetch("/api/auth/logout", { method: "POST" });
+            setUser(null);
+            router.push("/admin/login/");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            // Fallback: clear client-side and redirect anyway
+            document.cookie = "admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            setUser(null);
+            router.push("/admin/login/");
+        }
     };
 
     const isLoginPage = pathname === "/admin/login/";
