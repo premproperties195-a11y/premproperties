@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 import { generateResetToken } from '../../../lib/otp';
 import { validateEmail } from '../../../lib/validation';
+import { resetTokens } from '../../../lib/tokens';
 
-// Store reset tokens (use Redis in production)
-const resetTokens = new Map<string, { email: string; expiry: Date }>();
 
 export async function POST(request: Request) {
     try {
@@ -76,5 +75,4 @@ export async function POST(request: Request) {
     }
 }
 
-// Export resetTokens for use in reset-password route
-export { resetTokens };
+

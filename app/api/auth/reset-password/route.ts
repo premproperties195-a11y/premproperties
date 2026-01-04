@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 import { hashPassword, validatePasswordStrength } from '../../../lib/password';
+import { resetTokens } from '../../../lib/tokens';
 
-// Import resetTokens from forgot-password route
-let resetTokens: Map<string, { email: string; expiry: Date }>;
 
 export async function POST(request: Request) {
     try {
@@ -16,11 +15,7 @@ export async function POST(request: Request) {
             );
         }
 
-        // Lazy load resetTokens to avoid circular dependency
-        if (!resetTokens) {
-            const forgotPasswordModule = await import('../forgot-password/route');
-            resetTokens = forgotPasswordModule.resetTokens;
-        }
+
 
         // Verify token
         const tokenData = resetTokens.get(token);
