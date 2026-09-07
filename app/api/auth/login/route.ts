@@ -7,12 +7,24 @@ import { verifyPassword } from "../../../lib/password";
 const getLocalUsersFilePath = () => {
     const configuredPath = process.env.USERS_DATA_PATH;
     if (configuredPath) return configuredPath;
-    return path.join(process.cwd(), "app", "data", "users.json");
+    return path.join("/tmp", "premproperties-users.json");
+};
+
+const migrateLegacyLocalUsers = () => {
+    const usersPath = getLocalUsersFilePath();
+    const legacyPath = path.join(process.cwd(), "app", "data", "users.json");
+
+    if (!fs.existsSync(usersPath) && fs.existsSync(legacyPath)) {
+        fs.mkdirSync(path.dirname(usersPath), { recursive: true });
+        fs.copyFileSync(legacyPath, usersPath);
+    }
+
+    return usersPath;
 };
 
 const readLocalUsers = () => {
     try {
-        const usersPath = getLocalUsersFilePath();
+        const usersPath = migrateLegacyLocalUsers();
         if (!fs.existsSync(usersPath)) return [];
 
         const raw = fs.readFileSync(usersPath, "utf-8");

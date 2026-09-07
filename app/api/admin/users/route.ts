@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { isSuperAdmin } from "../../../lib/auth";
+import { hashPassword } from "../../../lib/password";
 
 export const dynamic = "force-dynamic";
 
@@ -9,12 +10,12 @@ const getUsersStoragePath = () => {
     const configuredPath = process.env.USERS_DATA_PATH;
     if (configuredPath) return configuredPath;
 
-    return path.join(process.cwd(), "app", "data", "users.json");
+    return path.join("/tmp", "premproperties-users.json");
 };
 
 const migrateLegacyUserFile = () => {
     const primaryPath = getUsersStoragePath();
-    const legacyPath = path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+    const legacyPath = path.join(process.cwd(), "app", "data", "users.json");
 
     if (!fs.existsSync(primaryPath) && fs.existsSync(legacyPath)) {
         const legacyUsers = JSON.parse(fs.readFileSync(legacyPath, "utf-8"));
@@ -95,12 +96,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Full name is required" }, { status: 400 });
         }
 
+        const hashedPassword = await hashPassword(String(newUser.password));
+
         const userToAdd = {
             ...newUser,
             username: String(newUser.username).trim(),
             email: String(newUser.email).trim(),
             permissions: Array.isArray(newUser.permissions) ? newUser.permissions : [],
             role: newUser.role || "sub_admin",
+            password: hashedPassword,
             id: Date.now().toString(),
             createdAt: new Date().toISOString()
         };
@@ -147,6 +151,9 @@ export async function PUT(request: Request) {
             return NextResponse.json({ error: "User already exists" }, { status: 400 });
         }
 
+        const nextPassword = String(updatedUser.password || users[index].password || "");
+        const hashedPassword = nextPassword ? await hashPassword(nextPassword) : users[index].password;
+
         const userToUpdate = {
             ...users[index],
             ...updatedUser,
@@ -154,7 +161,7 @@ export async function PUT(request: Request) {
             email: String(updatedUser.email).trim(),
             permissions: Array.isArray(updatedUser.permissions) ? updatedUser.permissions : users[index].permissions || [],
             role: updatedUser.role || users[index].role || "sub_admin",
-            password: String(updatedUser.password),
+            password: hashedPassword,
         };
 
         users[index] = userToUpdate;
