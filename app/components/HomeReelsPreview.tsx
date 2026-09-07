@@ -86,9 +86,9 @@ export default function HomeReelsPreview({ reels = [] }: { reels?: ReelItem[] })
   };
 
   return (
-    <section className="py-8 md:py-14 bg-[#f7f7f5]">
+    <section className="py-6 md:py-10 bg-[#f7f7f5]">
       <div className="max-w-[820px] mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
           <div>
             <span className="text-[var(--primary)] font-bold uppercase tracking-widest text-sm mb-2 block">
               Social Feed

@@ -143,6 +143,18 @@
     "defaultDescription": "Experience the pinnacle of luxury living with PREM Properties. We offer premium residential and commercial landmarks in Hyderabad.",
     "keywords": "real estate, hyderabad, luxury villas, premium apartments, commercial spaces"
   },
+  "googleReviews": {
+    "placeId": "",
+    "apiKey": "",
+    "items": [
+      {
+        "name": "Laxmidurga",
+        "rating": 5,
+        "date": "2019-12-23",
+        "text": "Tinnarante maimarichipotaru"
+      }
+    ]
+  },
   "footer": {
     "aboutText": "Building landmarks that redefine luxury living. Committed to excellence, innovation, and trust.",
     "copyright": "© 2024 PREM Properties. All rights reserved.",

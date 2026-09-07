@@ -24,9 +24,9 @@ export default function HomeGallery({ properties = [], galleryImages = [] }: Hom
     if (combined.length === 0) return null;
 
     return (
-        <section className="py-24 bg-white">
+        <section className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center mb-16">
+                <div className="text-center mb-10">
                     <span className="text-[var(--primary)] font-bold uppercase tracking-widest text-sm mb-4 block">
                         Visual Tour
                     </span>
@@ -56,7 +56,7 @@ export default function HomeGallery({ properties = [], galleryImages = [] }: Hom
                     ))}
                 </div>
 
-                <div className="mt-12 text-center">
+                <div className="mt-8 text-center">
                     <Link href="/gallery" className="px-8 py-3 bg-[var(--primary)] text-black font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-all">
                         View Full Gallery
                     </Link>

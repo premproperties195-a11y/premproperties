@@ -24,9 +24,9 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
         fetchLive();
     }, []);
     return (
-        <section className="py-24 px-6 bg-white overflow-hidden">
+        <section className="py-16 px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
                     {/* Text Side */}
                     <motion.div
                         initial={{ x: -50, opacity: 0 }}
@@ -35,20 +35,20 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                         transition={{ duration: 0.8 }}
                     >
                         <h2 className="text-[var(--primary)] font-bold uppercase tracking-widest text-sm mb-4">About PREM Properties</h2>
-                        <h3 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-8 leading-tight">
+                        <h3 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6 leading-tight">
                             {company.tagline || "Building Dreams, Creating Legacies"}
                         </h3>
-                        <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                        <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                             {company.aboutShort || "With over 15 years of experience, we have redefined the skyline of Hyderabad."}
                         </p>
 
                         {company.mission && (
-                            <blockquote className="border-l-4 border-[var(--primary)] pl-5 mb-10 italic text-gray-500">
+                            <blockquote className="border-l-4 border-[var(--primary)] pl-5 mb-6 italic text-gray-500">
                                 "{company.mission}"
                             </blockquote>
                         )}
 
-                        <div className="grid grid-cols-3 gap-8 mb-10">
+                        <div className="grid grid-cols-3 gap-6 mb-8">
                             {company.stats?.map((stat: any) => (
                                 <div key={stat.label}>
                                     <div className="text-3xl font-bold text-gray-900 mb-1">
@@ -79,7 +79,7 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                             <img
                                 src={company.aboutImage || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"}
                                 alt="PREM Properties Building"
-                                className="w-full h-[500px] object-cover"
+                                className="w-full h-[420px] md:h-[500px] object-cover"
                             />
                         </div>
                         {/* Decorative background block */}

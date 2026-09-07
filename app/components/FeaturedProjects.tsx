@@ -56,11 +56,11 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
   if (!safeProjects.length) return null;
 
   return (
-    <section id="projects" className="py-24 bg-[#0a0a0a]">
+    <section id="projects" className="py-16 bg-[#0a0a0a]">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8">
           <div>
-            <h2 className="text-4xl md:text-5xl font-sans font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-sans font-bold text-white mb-3">
               Our Projects
             </h2>
             <p className="text-gray-400 max-w-xl">
@@ -73,7 +73,7 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-10">
+        <div className="flex flex-wrap gap-4 mb-8">
           {filters.map((filter) => (
             <button
               key={filter}

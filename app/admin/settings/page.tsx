@@ -33,6 +33,18 @@ export default function SettingsAdmin() {
             defaultDescription: "",
             keywords: ""
         },
+        googleReviews: {
+            placeId: "",
+            apiKey: "",
+            items: [
+                {
+                    name: "",
+                    rating: 5,
+                    date: "",
+                    text: ""
+                }
+            ]
+        },
         footer: {
             aboutText: "",
             copyright: "",
@@ -200,6 +212,42 @@ export default function SettingsAdmin() {
         setSettings({
             ...settings,
             footer: { ...settings.footer, [field]: value }
+        });
+    };
+
+    const updateGoogleReviewField = (index: number, field: string, value: string | number) => {
+        const items = [...(settings.googleReviews?.items || [])];
+        items[index] = { ...items[index], [field]: value };
+        setSettings({
+            ...settings,
+            googleReviews: {
+                ...settings.googleReviews,
+                items,
+            }
+        });
+    };
+
+    const addGoogleReview = () => {
+        setSettings({
+            ...settings,
+            googleReviews: {
+                ...settings.googleReviews,
+                items: [
+                    ...(settings.googleReviews?.items || []),
+                    { name: "", rating: 5, date: "", text: "" }
+                ]
+            }
+        });
+    };
+
+    const removeGoogleReview = (index: number) => {
+        const items = (settings.googleReviews?.items || []).filter((_: any, i: number) => i !== index);
+        setSettings({
+            ...settings,
+            googleReviews: {
+                ...settings.googleReviews,
+                items,
+            }
         });
     };
 
@@ -663,6 +711,114 @@ export default function SettingsAdmin() {
                                     onChange={(e) => updateSEO("keywords", e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-gray-200">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Google Business Place ID</label>
+                                    <input
+                                        type="text"
+                                        value={settings.googleReviews?.placeId || ""}
+                                        onChange={(e) => setSettings({
+                                            ...settings,
+                                            googleReviews: {
+                                                ...settings.googleReviews,
+                                                placeId: e.target.value
+                                            }
+                                        })}
+                                        placeholder="Google Maps Place ID"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Google Places API Key</label>
+                                    <input
+                                        type="password"
+                                        value={settings.googleReviews?.apiKey || ""}
+                                        onChange={(e) => setSettings({
+                                            ...settings,
+                                            googleReviews: {
+                                                ...settings.googleReviews,
+                                                apiKey: e.target.value
+                                            }
+                                        })}
+                                        placeholder="Google API key"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mt-8 border-t border-gray-200 pt-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-lg font-bold text-gray-900">Review Entries</h3>
+                                    <button
+                                        type="button"
+                                        onClick={addGoogleReview}
+                                        className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-[var(--primary)] hover:text-black transition-colors"
+                                    >
+                                        + Add Review
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {(settings.googleReviews?.items || []).map((review: any, index: number) => (
+                                        <div key={index} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <p className="font-bold text-gray-800">Review {index + 1}</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeGoogleReview(index)}
+                                                    className="text-red-500 hover:text-red-700 font-medium"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Name</label>
+                                                    <input
+                                                        type="text"
+                                                        value={review.name || ""}
+                                                        onChange={(e) => updateGoogleReviewField(index, "name", e.target.value)}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Rating</label>
+                                                    <select
+                                                        value={review.rating || 5}
+                                                        onChange={(e) => updateGoogleReviewField(index, "rating", Number(e.target.value))}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                                    >
+                                                        <option value={5}>5</option>
+                                                        <option value={4}>4</option>
+                                                        <option value={3}>3</option>
+                                                        <option value={2}>2</option>
+                                                        <option value={1}>1</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={review.date || ""}
+                                                        onChange={(e) => updateGoogleReviewField(index, "date", e.target.value)}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                                    />
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Review Text</label>
+                                                    <textarea
+                                                        rows={3}
+                                                        value={review.text || ""}
+                                                        onChange={(e) => updateGoogleReviewField(index, "text", e.target.value)}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

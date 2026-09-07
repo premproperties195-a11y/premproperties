@@ -5,6 +5,7 @@ import FeaturedProjects from "./components/FeaturedProjects";
 import HomeReelsPreview from "./components/HomeReelsPreview";
 import Footer from "./components/Footer";
 import HomeGallery from "./components/HomeGallery";
+import GoogleReviews from "./components/GoogleReviews";
 
 import { fetchCompanyData, fetchPropertiesData } from "./lib/data";
 import { Metadata } from "next";
@@ -29,6 +30,11 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const { propertiesData, companyData } = await getData();
   const homeBanner = companyData?.banners?.home;
+  const googleReviews = companyData?.googleReviews || {
+    placeId: process.env.GOOGLE_PLACES_PLACE_ID || "",
+    apiKey: process.env.GOOGLE_PLACES_API_KEY || "",
+    items: [],
+  };
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -46,6 +52,13 @@ export default async function Home() {
 
       {/* HOME GALLERY */}
       <HomeGallery properties={propertiesData} galleryImages={companyData?.galleryImages} />
+
+      {/* GOOGLE REVIEWS */}
+      <GoogleReviews
+        placeId={googleReviews?.placeId}
+        apiKey={googleReviews?.apiKey}
+        reviews={googleReviews?.items}
+      />
 
       <Footer />
     </main>
