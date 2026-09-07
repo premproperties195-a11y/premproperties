@@ -9,19 +9,24 @@ const getUsersStoragePath = () => {
     const configuredPath = process.env.USERS_DATA_PATH;
     if (configuredPath) return configuredPath;
 
-    const projectPath = path.join(process.cwd(), "app", "data", "users.json");
-    try {
-        const projectDir = path.dirname(projectPath);
-        fs.mkdirSync(projectDir, { recursive: true });
-        fs.accessSync(projectDir, fs.constants.W_OK);
-        return projectPath;
-    } catch {
-        return path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+    return path.join(process.cwd(), "app", "data", "users.json");
+};
+
+const migrateLegacyUserFile = () => {
+    const primaryPath = getUsersStoragePath();
+    const legacyPath = path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+
+    if (!fs.existsSync(primaryPath) && fs.existsSync(legacyPath)) {
+        const legacyUsers = JSON.parse(fs.readFileSync(legacyPath, "utf-8"));
+        fs.mkdirSync(path.dirname(primaryPath), { recursive: true });
+        fs.writeFileSync(primaryPath, JSON.stringify(legacyUsers, null, 2));
     }
+
+    return primaryPath;
 };
 
 const ensureUsersFile = () => {
-    const storagePath = getUsersStoragePath();
+    const storagePath = migrateLegacyUserFile();
     const storageDir = path.dirname(storagePath);
 
     fs.mkdirSync(storageDir, { recursive: true });

@@ -26,5 +26,16 @@
     ],
     "id": "1788527651029",
     "createdAt": "2026-09-04T13:14:11.029Z"
+  },
+  {
+    "username": "shiva",
+    "email": "palakurlishivakumar99@gmail.com",
+    "password": "Shiva123",
+    "role": "sub_admin",
+    "permissions": [
+      "Inquiries"
+    ],
+    "id": "shiva-admin-001",
+    "createdAt": "2026-09-07T00:00:00.000Z"
   }
 ]
