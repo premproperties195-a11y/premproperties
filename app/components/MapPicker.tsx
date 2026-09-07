@@ -16,6 +16,7 @@ const defaultIcon = L.icon({
 interface MapPickerProps {
     lat: number | null;
     lng: number | null;
+    address?: string;
     onChange: (lat: number, lng: number) => void;
 }
 
@@ -39,7 +40,7 @@ function LocationMarker({ lat, lng, onChange }: MapPickerProps) {
     ) : null;
 }
 
-export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
+export default function MapPicker({ lat, lng, address = "", onChange }: MapPickerProps) {
     const center: [number, number] = lat && lng ? [lat, lng] : [17.3850, 78.4867]; // Default to Hyderabad
     const [isClient, setIsClient] = useState(false);
     const [locating, setLocating] = useState(false);
@@ -47,6 +48,49 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    useEffect(() => {
+        if (!address || !address.trim()) return;
+
+        const query = encodeURIComponent(address.trim());
+        const controller = new AbortController();
+        const timeoutId = setTimeout(async () => {
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${query}&limit=1`,
+                    {
+                        signal: controller.signal,
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                const result = data?.[0];
+
+                if (!result) return;
+
+                const nextLat = Number(result.lat);
+                const nextLng = Number(result.lon);
+
+                if (!Number.isFinite(nextLat) || !Number.isFinite(nextLng)) return;
+
+                onChange(nextLat, nextLng);
+            } catch (error) {
+                if ((error as Error).name !== 'AbortError') {
+                    console.warn('Address geocoding failed:', error);
+                }
+            }
+        }, 500);
+
+        return () => {
+            clearTimeout(timeoutId);
+            controller.abort();
+        };
+    }, [address, onChange]);
 
     const handleAutoLocation = () => {
         if (!("geolocation" in navigator)) {

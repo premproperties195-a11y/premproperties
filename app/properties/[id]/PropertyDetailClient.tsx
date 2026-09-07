@@ -61,6 +61,8 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
 
     const docs = Array.isArray(property?.documents) ? property.documents.filter((d: any) => d && d.trim() !== "") : [];
     const galleryImages = Array.isArray(property?.images) ? property.images.filter((img: any) => img && img.trim() !== "") : [];
+    const layoutImage = property?.layout_image || property?.layoutImage || property?.specs?.layout_image || property?.specs?.layoutImage;
+    const hasLayoutImage = typeof layoutImage === "string" ? layoutImage.trim() !== "" : Boolean(layoutImage);
 
     return (
         <main className="min-h-screen bg-white">
@@ -202,12 +204,12 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                         />
                     </div>
 
-                    {(property.layout_image || property.layoutImage || property.specs?.layout_image || property.specs?.layoutImage) && (
+                    {hasLayoutImage && (
                         <div className="mt-10">
                             <h3 className="text-2xl font-bold mb-6">Layout Plan</h3>
                             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
                                 <img
-                                    src={property.layout_image || property.layoutImage || property.specs?.layout_image || property.specs?.layoutImage}
+                                    src={layoutImage}
                                     alt={`${property.title} layout plan`}
                                     className="w-full max-h-[700px] object-contain bg-white"
                                 />

@@ -124,7 +124,12 @@ export default function PropertyEditClient({ id }: { id: string }) {
             delete (payload as any).created_at; // Don't manually update created_at
             delete (payload as any).id; // ID should managed by database or provided in the .eq() clause
 
-            const layoutImageValue = (payload as any).layout_image || (payload as any).layoutImage || (payload as any).specs?.layout_image || (payload as any).specs?.layoutImage || "";
+            const currentLayoutField = (payload as any).layout_image ?? (payload as any).layoutImage ?? "";
+            const normalizedLayoutValue = typeof currentLayoutField === "string"
+                ? currentLayoutField.trim()
+                : currentLayoutField;
+
+            const layoutImageValue = normalizedLayoutValue || "";
 
             const safePayload = {
                 ...payload,
@@ -352,7 +357,14 @@ export default function PropertyEditClient({ id }: { id: string }) {
                             {formData.layout_image && (
                                 <button
                                     type="button"
-                                    onClick={() => setFormData({ ...formData, layout_image: "" })}
+                                    onClick={() => setFormData({
+                                        ...formData,
+                                        layout_image: "",
+                                        specs: {
+                                            ...(formData.specs as any),
+                                            layout_image: ""
+                                        }
+                                    })}
                                     className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold"
                                 >
                                     Remove
@@ -375,6 +387,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                             <MapPicker
                                 lat={formData.latitude}
                                 lng={formData.longitude}
+                                address={formData.map_address}
                                 onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
                             />
                         </div>
