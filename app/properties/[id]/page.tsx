@@ -1,17 +1,15 @@
-import { fetchPropertiesData } from "../../lib/data";
+import { fetchPropertyById } from "../../lib/data";
 import PropertyDetailClient from "./PropertyDetailClient";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
-    const properties = await fetchPropertiesData();
-    return properties.map((p: any) => ({ id: String(p.id) }));
+    return [];
 }
 
 export default async function PropertyDetailsPage({ params }: { params: { id: string } }) {
-    const properties = await fetchPropertiesData();
-    const property = properties.find((p: any) => String(p.id) === params.id);
+    const property = await fetchPropertyById(params.id);
 
     if (!property) {
         return (

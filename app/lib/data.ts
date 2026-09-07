@@ -35,36 +35,49 @@ export async function fetchCompanyData() {
 
 export async function fetchPropertiesData() {
     try {
-        // Try Supabase first
         const { data: dbProperties, error } = await supabase
             .from('properties')
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (dbProperties && !error && dbProperties.length > 0) {
-            return dbProperties.map(p => ({
-                ...p,
-                id: String(p.id) // Ensure ID is string for compat
-            }));
+        if (error) {
+            console.error('Error fetching properties data from Supabase:', error);
+            return [];
         }
 
-        // Fallback to local file - only on server
-        if (typeof window === 'undefined') {
-            try {
-                const fs = (await import('fs')).default;
-                const path = (await import('path')).default;
-                const filePath = path.join(process.cwd(), 'app/data/properties.json');
-                const fileContent = fs.readFileSync(filePath, 'utf-8');
-                return JSON.parse(fileContent);
-            } catch (e) {
-                console.error('Local fallback failed:', e);
-            }
-        }
-
-        return [];
+        return (dbProperties || []).map(p => ({
+            ...p,
+            id: String(p.id)
+        }));
     } catch (error) {
         console.error('Error fetching properties data:', error);
         return [];
+    }
+}
+
+export async function fetchPropertyById(propertyId: string | number) {
+    try {
+        const id = String(propertyId);
+        const { data, error } = await supabase
+            .from('properties')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error('Error fetching property by id from Supabase:', error);
+            return null;
+        }
+
+        if (!data) return null;
+
+        return {
+            ...data,
+            id: String(data.id)
+        };
+    } catch (error) {
+        console.error('Error fetching property by id:', error);
+        return null;
     }
 }
 
