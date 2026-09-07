@@ -9,7 +9,15 @@ const getUsersStoragePath = () => {
     const configuredPath = process.env.USERS_DATA_PATH;
     if (configuredPath) return configuredPath;
 
-    return path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+    const projectPath = path.join(process.cwd(), "app", "data", "users.json");
+    try {
+        const projectDir = path.dirname(projectPath);
+        fs.mkdirSync(projectDir, { recursive: true });
+        fs.accessSync(projectDir, fs.constants.W_OK);
+        return projectPath;
+    } catch {
+        return path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+    }
 };
 
 const ensureUsersFile = () => {
