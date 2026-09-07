@@ -84,7 +84,12 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-gray-900 text-center text-xs text-gray-500">
-        <p>{footer.copyright || `© ${new Date().getFullYear()} PREM Properties. All rights reserved.`}</p>
+        <p>
+          {footer.copyright || `© ${new Date().getFullYear()} PREM Properties. All rights reserved.`}
+        </p>
+        <p className="mt-2">
+          Developed by <a href="http://cyberlearnix.com/" target="_blank" rel="noopener noreferrer" className="text-[var(--primary)] hover:text-white transition-colors">Cyberlearnix Private Limited</a>
+        </p>
       </div>
     </footer>
   );

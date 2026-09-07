@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import CloudinaryUpload from "../../components/CloudinaryUpload";
 import { supabase } from "../../lib/supabase";
 
 export default function ContentAdmin() {
@@ -14,6 +15,8 @@ export default function ContentAdmin() {
             aboutLong: "",
             vision: "",
             mission: "",
+            aboutImage: "",
+            reels: [{ url: "", title: "" }],
             stats: [
                 { label: "", value: "" },
                 { label: "", value: "" },
@@ -49,6 +52,34 @@ export default function ContentAdmin() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const addReel = () => {
+        const currentReels = Array.isArray(content.company?.reels) ? content.company.reels : [];
+        const updatedReels = [{ url: "", title: "" }, ...currentReels];
+        setContent({
+            ...content,
+            company: { ...content.company, reels: updatedReels }
+        });
+    };
+
+    const updateReel = (index: number, field: string, value: string) => {
+        const currentReels = Array.isArray(content.company?.reels) ? content.company.reels : [];
+        const updatedReels = [...currentReels];
+        updatedReels[index] = { ...updatedReels[index], [field]: value };
+        setContent({
+            ...content,
+            company: { ...content.company, reels: updatedReels }
+        });
+    };
+
+    const removeReel = (index: number) => {
+        const currentReels = Array.isArray(content.company?.reels) ? content.company.reels : [];
+        const updatedReels = currentReels.filter((_: any, i: number) => i !== index);
+        setContent({
+            ...content,
+            company: { ...content.company, reels: updatedReels.length ? updatedReels : [{ url: "", title: "" }] }
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -175,6 +206,80 @@ export default function ContentAdmin() {
                                 rows={2}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-gray-700 mb-2">About Section Image</label>
+                            <div className="flex gap-3 items-center">
+                                <input
+                                    type="url"
+                                    value={content.company?.aboutImage || ""}
+                                    onChange={(e) => setContent({
+                                        ...content,
+                                        company: { ...content.company, aboutImage: e.target.value }
+                                    })}
+                                    placeholder="https://example.com/about-image.jpg"
+                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                />
+                                <div className="shrink-0">
+                                    <CloudinaryUpload
+                                        onUploadSuccess={(url) => setContent({
+                                            ...content,
+                                            company: { ...content.company, aboutImage: url }
+                                        })}
+                                        buttonText="📁"
+                                        resourceType="image"
+                                    />
+                                </div>
+                            </div>
+                            {content.company?.aboutImage && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 h-32 w-60">
+                                    <img src={content.company.aboutImage} alt="About preview" className="w-full h-full object-cover" />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <div className="flex items-center justify-between gap-4 mb-3">
+                                <label className="block text-sm font-bold text-gray-700">Instagram Reels / YouTube Shorts</label>
+                                <button
+                                    type="button"
+                                    onClick={addReel}
+                                    className="px-4 py-2 rounded-lg bg-black text-white text-sm font-bold hover:bg-[var(--primary)] hover:text-black transition-colors"
+                                >
+                                    + Add Reel
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                {(Array.isArray(content.company?.reels) ? content.company.reels : []).map((reel: any, index: number) => (
+                                    <div key={`${reel.url || 'new'}-${index}`} className="flex gap-3 items-start rounded-xl border border-gray-200 p-3 bg-gray-50">
+                                        <div className="flex-1 grid md:grid-cols-[1.4fr_0.6fr] gap-3">
+                                            <input
+                                                type="url"
+                                                value={reel.url || ""}
+                                                onChange={(e) => updateReel(index, "url", e.target.value)}
+                                                placeholder="https://www.instagram.com/reel/... or https://youtu.be/... or https://youtube.com/shorts/..."
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={reel.title || ""}
+                                                onChange={(e) => updateReel(index, "title", e.target.value)}
+                                                placeholder="Reel title"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeReel(index)}
+                                            className="px-3 py-2 text-sm font-bold text-red-600 hover:text-red-800"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 

@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import HomeAbout from "./components/HomeAbout";
 import FeaturedProjects from "./components/FeaturedProjects";
+import HomeReelsPreview from "./components/HomeReelsPreview";
 import Footer from "./components/Footer";
 import HomeGallery from "./components/HomeGallery";
 
@@ -39,6 +40,9 @@ export default async function Home() {
 
       {/* FEATURED PROPERTIES PREVIEW */}
       <FeaturedProjects projects={propertiesData} />
+
+      {/* INSTAGRAM REELS PREVIEW */}
+      <HomeReelsPreview reels={companyData?.company?.reels} />
 
       {/* HOME GALLERY */}
       <HomeGallery properties={propertiesData} galleryImages={companyData?.galleryImages} />

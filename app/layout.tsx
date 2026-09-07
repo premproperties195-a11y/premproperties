@@ -55,6 +55,11 @@ export async function generateMetadata() {
     keywords,
     authors: [{ name: "PREM Properties" }],
     alternates: { canonical: "/" },
+    icons: {
+      icon: [{ url: "/logo.png", type: "image/png" }],
+      shortcut: "/logo.png",
+      apple: "/logo.png",
+    },
     openGraph: {
       title,
       description,
@@ -130,6 +135,22 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <LocalBusinessJsonLd />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const savedTheme = localStorage.getItem('theme');
+                  const preferredTheme = savedTheme === 'dark' || savedTheme === 'light'
+                    ? savedTheme
+                    : 'light';
+                  document.documentElement.setAttribute('data-theme', preferredTheme);
+                  document.documentElement.style.colorScheme = preferredTheme;
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <style dangerouslySetInnerHTML={{
           __html: `
           :root {

@@ -17,6 +17,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
     const [property, setProperty] = useState(initialProperty);
     const [isMember, setIsMember] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showEnquiryModal, setShowEnquiryModal] = useState(false);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -200,8 +201,53 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                             address={property.map_address || property.location}
                         />
                     </div>
+
+                    {(property.layout_image || property.layoutImage || property.specs?.layout_image || property.specs?.layoutImage) && (
+                        <div className="mt-10">
+                            <h3 className="text-2xl font-bold mb-6">Layout Plan</h3>
+                            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                                <img
+                                    src={property.layout_image || property.layoutImage || property.specs?.layout_image || property.specs?.layoutImage}
+                                    alt={`${property.title} layout plan`}
+                                    className="w-full max-h-[700px] object-contain bg-white"
+                                />
+                            </div>
+
+                            <div className="mt-8 flex justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEnquiryModal(true)}
+                                    className="bg-[var(--primary)] text-black px-8 py-3 rounded-lg font-bold hover:bg-black hover:text-white transition-colors shadow-lg"
+                                >
+                                    Enquire About This Property
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
+
+            {showEnquiryModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+                    <div className="relative w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl">
+                        <button
+                            type="button"
+                            onClick={() => setShowEnquiryModal(false)}
+                            className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-black"
+                            aria-label="Close"
+                        >
+                            ×
+                        </button>
+                        <PropertyEnquiry
+                            propertyTitle={property.title}
+                            initialViews={500}
+                            triggerText="Send Enquiry"
+                            modalMode={true}
+                            onClose={() => setShowEnquiryModal(false)}
+                        />
+                    </div>
+                </div>
+            )}
 
             <Footer />
         </main>

@@ -3,11 +3,24 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-export default function PropertyEnquiry({ propertyTitle, initialViews }: { propertyTitle: string, initialViews: number }) {
+export default function PropertyEnquiry({
+    propertyTitle,
+    initialViews,
+    triggerText = "Request Details",
+    modalMode = false,
+    onClose,
+}: {
+    propertyTitle: string,
+    initialViews: number,
+    triggerText?: string,
+    modalMode?: boolean,
+    onClose?: () => void,
+}) {
     const [formState, setFormState] = useState({ name: "", phone: "", email: "" });
     const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
     const [errorMessage, setErrorMessage] = useState("");
     const [views, setViews] = useState(initialViews);
+    const [isOpen, setIsOpen] = useState(false);
 
     // Simulate real-time view increment
     useEffect(() => {
@@ -45,12 +58,89 @@ export default function PropertyEnquiry({ propertyTitle, initialViews }: { prope
 
             setStatus("success");
             setFormState({ name: "", phone: "", email: "" });
+            if (onClose) {
+                setTimeout(() => onClose(), 1200);
+            }
         } catch (error: any) {
             console.error("Error sending enquiry:", error);
             setErrorMessage(error.message || "Failed to send enquiry. Please try again.");
             setStatus("idle");
         }
     };
+
+    if (modalMode) {
+        const content = (
+            <div className="w-full">
+                <div className="mb-6">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Property enquiry</p>
+                    <h3 className="mt-2 text-2xl font-bold text-gray-900">{propertyTitle}</h3>
+                </div>
+
+                {status === "success" ? (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-green-50 border border-green-200 text-green-800 p-6 rounded-lg text-center"
+                    >
+                        <p className="text-4xl mb-2">✅</p>
+                        <h4 className="font-bold mb-1">Enquiry Sent!</h4>
+                        <p className="text-sm">Our team will contact you soon.</p>
+                    </motion.div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-400 mb-1">Name</label>
+                            <input
+                                required
+                                type="text"
+                                value={formState.name}
+                                onChange={e => setFormState({ ...formState, name: e.target.value })}
+                                className="w-full border border-gray-200 p-3 rounded-md focus:outline-none focus:border-[var(--primary)] transition-colors"
+                                placeholder="Your Name"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-400 mb-1">Phone</label>
+                            <input
+                                required
+                                type="tel"
+                                value={formState.phone}
+                                onChange={e => setFormState({ ...formState, phone: e.target.value })}
+                                className="w-full border border-gray-200 p-3 rounded-md focus:outline-none focus:border-[var(--primary)] transition-colors"
+                                placeholder="+91 Phone Number"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase text-gray-400 mb-1">Email</label>
+                            <input
+                                required
+                                type="email"
+                                value={formState.email}
+                                onChange={e => setFormState({ ...formState, email: e.target.value })}
+                                className="w-full border border-gray-200 p-3 rounded-md focus:outline-none focus:border-[var(--primary)] transition-colors"
+                                placeholder="your@email.com"
+                            />
+                        </div>
+                        {errorMessage && (
+                            <p className="text-red-500 text-sm font-bold text-center">{errorMessage}</p>
+                        )}
+                        <button
+                            disabled={status === "submitting"}
+                            className="w-full py-4 bg-[var(--primary)] text-white font-bold uppercase tracking-wider rounded-md hover:bg-black transition-colors shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            {status === "submitting" ? "Sending..." : triggerText}
+                        </button>
+                    </form>
+                )}
+            </div>
+        );
+
+        return (
+            <div className="w-full">
+                {content}
+            </div>
+        );
+    }
 
     return (
         <div className="sticky top-32 p-8 bg-white border border-gray-200 shadow-xl rounded-xl">

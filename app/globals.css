@@ -5,29 +5,38 @@
 :root {
   /* Ultra-Clean Palette */
   --background: #FFFFFF;
-  /* Pure White */
   --foreground: #1A1A1A;
-  /* Sharp Black for text */
   --secondary-bg: #F9F9F9;
-  /* Very Light Beige/Grey for sections */
+  --panel-bg: #FFFFFF;
+  --muted-text: #4B5563;
 
   /* Brand Accent */
   --primary: #FFA600;
-  /* Vibrant Orange-Yellow from Logo/Image */
   --primary-light: #FFB733;
   --primary-dark: #CC8500;
 
   --border-color: #E5E5E5;
-  /* Subtle borders */
 
   /* Font Families */
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-serif: var(--font-playfair), serif;
 }
 
+html[data-theme="dark"] {
+  --background: #0B1220;
+  --foreground: #F5F7FA;
+  --secondary-bg: #111827;
+  --panel-bg: #111827;
+  --muted-text: #D1D5DB;
+  --primary: #FFA600;
+  --primary-light: #FFB733;
+  --primary-dark: #CC8500;
+  --border-color: rgba(255, 255, 255, 0.12);
+}
+
 @layer base {
   body {
-    @apply bg-[var(--background)] text-[var(--foreground)] antialiased;
+    @apply bg-[var(--background)] text-[var(--foreground)] antialiased transition-colors duration-300;
     font-family: var(--font-sans);
   }
 
@@ -39,10 +48,8 @@
   h6 {
     @apply font-bold tracking-tight text-[var(--foreground)];
     font-family: var(--font-sans);
-    /* Sticking to clean Sans mostly */
   }
 
-  /* Optional: Use Serif only for specific elegant headings */
   .font-serif {
     font-family: var(--font-serif);
   }
@@ -68,6 +75,43 @@
   .card-hover {
     @apply transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl;
   }
+}
+
+html[data-theme="dark"] .glass-header {
+  background: rgba(17, 24, 39, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-slate-50,
+html[data-theme="dark"] .bg-gray-50 {
+  background-color: var(--panel-bg) !important;
+}
+
+html[data-theme="dark"] .text-black {
+  color: var(--foreground) !important;
+}
+
+html[data-theme="dark"] .text-gray-600,
+html[data-theme="dark"] .text-gray-700,
+html[data-theme="dark"] .text-gray-500,
+html[data-theme="dark"] .text-gray-400 {
+  color: var(--muted-text) !important;
+}
+
+html[data-theme="dark"] .text-white {
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .border-gray-200,
+html[data-theme="dark"] .border-gray-300 {
+  border-color: var(--border-color) !important;
+}
+
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow-md,
+html[data-theme="dark"] .shadow-lg {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28) !important;
 }
 
 /* Swiper Customization for Light Theme */

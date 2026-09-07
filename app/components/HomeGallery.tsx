@@ -5,12 +5,20 @@ import Link from "next/link";
 
 interface HomeGalleryProps {
     properties?: any[];
-    galleryImages?: string[];
+    galleryImages?: any[];
 }
+
+const normalizeGalleryImages = (galleryImages: any[] = []) =>
+    (galleryImages || [])
+        .map((entry) => {
+            if (typeof entry === "string") return entry;
+            return typeof entry?.url === "string" ? entry.url : "";
+        })
+        .filter((url) => typeof url === "string" && url.trim() !== "");
 
 export default function HomeGallery({ properties = [], galleryImages = [] }: HomeGalleryProps) {
     // Only using general gallery images as per user request
-    const combined = (galleryImages || []).slice(0, 6);
+    const combined = normalizeGalleryImages(galleryImages).slice(0, 6);
 
     // Fallback if no images are found
     if (combined.length === 0) return null;

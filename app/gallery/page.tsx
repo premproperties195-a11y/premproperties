@@ -26,8 +26,22 @@ export default async function GalleryPage() {
         tags: ""
     };
 
-    // Filter only valid gallery images from company data
-    const allImages = (companyData?.galleryImages || []).filter((img: string) => img && img.trim() !== "");
+    // Support both old URL-only format and the new object format with optional titles.
+    const allImages = (companyData?.galleryImages || [])
+        .map((entry: any) => {
+            if (typeof entry === "string") {
+                return { url: entry, title: "" };
+            }
+
+            const url = typeof entry?.url === "string" ? entry.url : "";
+            if (!url || url.trim() === "") return null;
+
+            return {
+                url,
+                title: typeof entry?.title === "string" ? entry.title : "",
+            };
+        })
+        .filter(Boolean) as { url: string; title: string }[];
 
     return (
         <main className="min-h-screen bg-[var(--background)]">
@@ -80,10 +94,15 @@ export default async function GalleryPage() {
                 <div className="max-w-7xl mx-auto">
                     {allImages.length > 0 ? (
                         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-                            {allImages.map((img, i) => (
-                                <div key={i} className="break-inside-avoid rounded-lg overflow-hidden group relative hover:shadow-xl transition-shadow duration-300">
-                                    <img src={img} alt="Gallery" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
+                            {allImages.map((item, i) => (
+                                <div key={`${item.url}-${i}`} className="break-inside-avoid rounded-lg overflow-hidden group relative hover:shadow-xl transition-shadow duration-300 bg-white shadow-sm">
+                                    <img src={item.url} alt={item.title || "Gallery image"} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    {item.title && (
+                                        <div className="bg-white/95 px-4 py-3 border-t border-gray-200 text-sm font-semibold text-gray-800">
+                                            {item.title}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

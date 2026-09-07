@@ -26,6 +26,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
         category: "Residential",
         status: "Available",
         image: "",
+        layout_image: "",
         images: [""],
         description: "",
         amenities: [""],
@@ -88,6 +89,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 category: data.category || "Residential",
                 status: data.status || "Available",
                 image: data.image || "",
+                layout_image: data.layout_image || data.layoutImage || data.specs?.layout_image || data.specs?.layoutImage || "",
                 description: data.description || "",
                 map_address: data.map_address || "",
                 rent_frequency: data.rent_frequency || "Month",
@@ -98,6 +100,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     area: data.specs?.area || "",
                     beds: data.specs?.beds || 0,
                     baths: data.specs?.baths || 0,
+                    layout_image: data.specs?.layout_image || data.specs?.layoutImage || data.layout_image || data.layoutImage || "",
                 },
                 latitude: data.latitude ?? null,
                 longitude: data.longitude ?? null,
@@ -121,24 +124,40 @@ export default function PropertyEditClient({ id }: { id: string }) {
             delete (payload as any).created_at; // Don't manually update created_at
             delete (payload as any).id; // ID should managed by database or provided in the .eq() clause
 
+            const layoutImageValue = (payload as any).layout_image || (payload as any).layoutImage || (payload as any).specs?.layout_image || (payload as any).specs?.layoutImage || "";
+
+            const safePayload = {
+                ...payload,
+                specs: {
+                    ...(payload as any).specs,
+                    area: (payload as any).specs?.area || "",
+                    beds: (payload as any).specs?.beds || 0,
+                    baths: (payload as any).specs?.baths || 0,
+                    layout_image: layoutImageValue,
+                },
+            } as any;
+
+            delete safePayload.layout_image;
+            delete safePayload.layoutImage;
+
             // Clean up empty strings in arrays before saving
-            if (Array.isArray(payload.images)) {
-                payload.images = payload.images.filter(img => img && img.trim() !== "");
+            if (Array.isArray(safePayload.images)) {
+                safePayload.images = safePayload.images.filter(img => img && img.trim() !== "");
             }
-            if (Array.isArray(payload.amenities)) {
-                payload.amenities = payload.amenities.filter(a => a && a.trim() !== "");
+            if (Array.isArray(safePayload.amenities)) {
+                safePayload.amenities = safePayload.amenities.filter(a => a && a.trim() !== "");
             }
-            if (Array.isArray(payload.documents)) {
-                payload.documents = payload.documents.filter(d => d && d.trim() !== "");
+            if (Array.isArray(safePayload.documents)) {
+                safePayload.documents = safePayload.documents.filter(d => d && d.trim() !== "");
             }
 
-            console.log("Saving Property Payload:", payload);
+            console.log("Saving Property Payload:", safePayload);
 
             let result;
             if (isNew) {
-                result = await supabase.from("properties").insert([payload]).select();
+                result = await supabase.from("properties").insert([safePayload]).select();
             } else {
-                result = await supabase.from("properties").update(payload).eq("id", id).select();
+                result = await supabase.from("properties").update(safePayload).eq("id", id).select();
             }
 
             if (result.error) {
@@ -305,6 +324,23 @@ export default function PropertyEditClient({ id }: { id: string }) {
                             <CloudinaryUpload
                                 onUploadSuccess={(url) => setFormData({ ...formData, image: url })}
                                 buttonText="📸 Upload"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Layout Image URL</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                value={formData.layout_image}
+                                onChange={(e) => setFormData({ ...formData, layout_image: e.target.value })}
+                                placeholder="https://... (layout plan image)"
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                            />
+                            <CloudinaryUpload
+                                onUploadSuccess={(url) => setFormData({ ...formData, layout_image: url })}
+                                buttonText="📐 Upload"
                             />
                         </div>
                     </div>

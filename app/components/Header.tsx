@@ -10,6 +10,11 @@ export default function Header({ nav }: { nav?: any[] }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [member, setMember] = useState<any>(null);
   const [company, setCompany] = useState<any>(null);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    const savedTheme = window.localStorage.getItem("theme");
+    return savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,7 +31,25 @@ export default function Header({ nav }: { nav?: any[] }) {
       } catch (e) { }
     };
     fetchMember();
+
+    const syncThemeFromStorage = () => {
+      const savedTheme = window.localStorage.getItem("theme");
+      const nextTheme = savedTheme === "dark" || savedTheme === "light" ? savedTheme : "light";
+      setTheme(nextTheme);
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      document.documentElement.style.colorScheme = nextTheme;
+    };
+
+    syncThemeFromStorage();
+    window.addEventListener("storage", syncThemeFromStorage);
+    return () => window.removeEventListener("storage", syncThemeFromStorage);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const handleLogout = async () => {
     await fetch("/api/member/logout", { method: "POST" });
@@ -51,6 +74,13 @@ export default function Header({ nav }: { nav?: any[] }) {
 
   const logoUrl = company?.appearance?.logo || "/logo.png";
   const logoHeight = company?.appearance?.logoHeight || "80";
+
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"));
+  };
+
+  const isDarkTheme = theme === "dark";
+  const themeToggleLabel = isDarkTheme ? "Light Mode" : "Dark Mode";
 
   return (
     <header
@@ -99,6 +129,21 @@ export default function Header({ nav }: { nav?: any[] }) {
             </Link>
           )}
 
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={isDarkTheme ? "Switch to light mode" : "Switch to dark mode"}
+            aria-pressed={isDarkTheme}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+              scrolled
+                ? "border-gray-300 bg-white/80 text-gray-700 hover:text-black"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+            }`}
+          >
+            <span>{isDarkTheme ? "☀" : "☾"}</span>
+            <span>{themeToggleLabel}</span>
+          </button>
+
           <Link href="/contact/" className="px-6 py-2 bg-[var(--primary)] text-white text-sm font-bold uppercase tracking-wider hover:bg-black transition-colors rounded-sm shadow-md">
             Enquire
           </Link>
@@ -137,6 +182,17 @@ export default function Header({ nav }: { nav?: any[] }) {
                 {item.label}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={() => {
+                toggleTheme();
+                setMobileMenuOpen(false);
+              }}
+              className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-gray-100 px-5 py-3 text-base font-bold uppercase tracking-[0.2em] text-black"
+            >
+              <span>{isDarkTheme ? "☀" : "☾"}</span>
+              <span>{themeToggleLabel}</span>
+            </button>
             <Link
               href="/contact/"
               onClick={() => setMobileMenuOpen(false)}

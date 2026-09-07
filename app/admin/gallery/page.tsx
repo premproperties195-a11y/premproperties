@@ -4,8 +4,30 @@ import { useEffect, useState } from "react";
 import CloudinaryUpload from "../../components/CloudinaryUpload";
 import { supabase } from "../../lib/supabase";
 
+type GalleryImage = {
+    url: string;
+    title?: string;
+};
+
+const normalizeGalleryImages = (items: any[] = []): GalleryImage[] =>
+    items
+        .map((item) => {
+            if (typeof item === "string") {
+                return { url: item, title: "" };
+            }
+
+            const url = typeof item?.url === "string" ? item.url : "";
+            if (!url || url.trim() === "") return null;
+
+            return {
+                url,
+                title: typeof item?.title === "string" ? item.title : "",
+            };
+        })
+        .filter(Boolean) as GalleryImage[];
+
 export default function GalleryAdmin() {
-    const [images, setImages] = useState<string[]>([]);
+    const [images, setImages] = useState<GalleryImage[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [status, setStatus] = useState("");
@@ -34,8 +56,9 @@ export default function GalleryAdmin() {
             console.log("Database response:", data);
 
             if (data?.data?.galleryImages && Array.isArray(data.data.galleryImages)) {
-                console.log(`Found ${data.data.galleryImages.length} gallery images`);
-                setImages(data.data.galleryImages);
+                const normalized = normalizeGalleryImages(data.data.galleryImages);
+                console.log(`Found ${normalized.length} gallery images`);
+                setImages(normalized);
             } else {
                 console.log("No gallery images found, starting fresh");
                 setImages([]);
@@ -48,7 +71,7 @@ export default function GalleryAdmin() {
         }
     };
 
-    const saveGalleryToDB = async (newImages: string[]) => {
+    const saveGalleryToDB = async (newImages: GalleryImage[]) => {
         setSaving(true);
         setStatus("Saving to database...");
         setError("");
@@ -72,7 +95,7 @@ export default function GalleryAdmin() {
 
             const updatedData = {
                 ...(existing?.data || {}),
-                galleryImages: newImages
+                galleryImages: normalizeGalleryImages(newImages as any[])
             };
 
             console.log("Updating with new data:", updatedData);
@@ -93,8 +116,8 @@ export default function GalleryAdmin() {
 
             console.log("Save successful:", result);
 
-            setImages(newImages);
-            setStatus(`✅ Saved ${newImages.length} images to database!`);
+            setImages(normalizeGalleryImages(newImages as any[]));
+            setStatus(`✅ Saved ${normalizeGalleryImages(newImages as any[]).length} images to database!`);
             setTimeout(() => setStatus(""), 5000);
         } catch (err: any) {
             console.error("Failed to save gallery:", err);
@@ -109,26 +132,32 @@ export default function GalleryAdmin() {
     const handleUploadSuccess = async (url: string) => {
         console.log("Single upload success:", url);
         setStatus("Processing upload...");
-        const updated = [url, ...images];
+        const updated = [{ url, title: "" }, ...images];
         await saveGalleryToDB(updated);
     };
 
     const handleBulkUpload = async (urls: string[]) => {
         console.log("Bulk upload success:", urls.length, "images");
         setStatus("Processing bulk upload...");
-        const updated = [...urls, ...images];
+        const updated = [...urls.map(url => ({ url, title: "" })), ...images];
         await saveGalleryToDB(updated);
     };
 
     const handleDelete = async (url: string) => {
         if (!confirm("Remove this image from the gallery?")) return;
-        const updated = images.filter(i => i !== url);
+        const updated = images.filter(item => item.url !== url);
         await saveGalleryToDB(updated);
     };
 
     const handleClearAll = async () => {
         if (!confirm(`Remove ALL ${images.length} images? This cannot be undone.`)) return;
         await saveGalleryToDB([]);
+    };
+
+    const updateImageTitle = (index: number, title: string) => {
+        const updated = [...images];
+        updated[index] = { ...updated[index], title };
+        setImages(updated);
     };
 
     const handleManualSave = async () => {
@@ -258,28 +287,41 @@ export default function GalleryAdmin() {
                             💡 <strong>Important:</strong> If images disappear after refresh, click "Save Now" button above or check for errors in browser console (F12).
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                            {images.map((url, i) => (
-                                <div key={i} className="group relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-[var(--primary)] transition-all shadow-sm hover:shadow-lg">
-                                    <img
-                                        src={url}
-                                        alt={`Gallery ${i + 1}`}
-                                        className="w-full h-full object-cover"
-                                        loading="lazy"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-xs">
-                                            <p className="font-bold">Image #{i + 1}</p>
+                            {images.map((img, i) => (
+                                <div key={`${img.url}-${i}`} className="group relative rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200 hover:border-[var(--primary)] transition-all shadow-sm hover:shadow-lg">
+                                    <div className="relative aspect-square">
+                                        <img
+                                            src={img.url}
+                                            alt={`Gallery ${i + 1}`}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-xs">
+                                                <p className="font-bold">Image #{i + 1}</p>
+                                            </div>
+                                        </div>
+                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                                onClick={() => handleDelete(img.url)}
+                                                disabled={saving}
+                                                className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg hover:scale-110 transform disabled:opacity-50"
+                                                title="Delete Image"
+                                            >
+                                                🗑️
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={() => handleDelete(url)}
-                                            disabled={saving}
-                                            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg hover:scale-110 transform disabled:opacity-50"
-                                            title="Delete Image"
-                                        >
-                                            🗑️
-                                        </button>
+                                    <div className="p-3 border-t border-gray-200 bg-white">
+                                        <label className="text-[10px] uppercase tracking-wide font-bold text-gray-500 block mb-1">Optional title</label>
+                                        <input
+                                            type="text"
+                                            value={img.title || ""}
+                                            onChange={(e) => updateImageTitle(i, e.target.value)}
+                                            onBlur={handleManualSave}
+                                            placeholder="e.g. Family Living Room"
+                                            className="w-full border border-gray-200 rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                                        />
                                     </div>
                                 </div>
                             ))}
