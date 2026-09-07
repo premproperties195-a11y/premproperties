@@ -17,6 +17,8 @@ export default function UserManagement() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingUserId, setEditingUserId] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
     const [newUser, setNewUser] = useState({
         username: "",
         email: "",
@@ -58,6 +60,30 @@ export default function UserManagement() {
         }
     };
 
+    const resetForm = () => {
+        setNewUser({ username: "", email: "", password: "", role: "sub_admin", permissions: [] });
+        setEditingUserId(null);
+        setShowPassword(false);
+    };
+
+    const openCreateModal = () => {
+        resetForm();
+        setIsModalOpen(true);
+    };
+
+    const openEditModal = (user: User) => {
+        setEditingUserId(user.id);
+        setNewUser({
+            username: user.username,
+            email: user.email,
+            password: user.password || "",
+            role: user.role,
+            permissions: user.permissions || []
+        });
+        setShowPassword(false);
+        setIsModalOpen(true);
+    };
+
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -72,7 +98,35 @@ export default function UserManagement() {
 
             setUsers(prev => [...prev, data]);
             setIsModalOpen(false);
-            setNewUser({ username: "", email: "", password: "", role: "sub_admin", permissions: [] });
+            resetForm();
+            await fetchUsers();
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
+
+    const handleUpdateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        if (!editingUserId) return;
+
+        try {
+            const res = await fetch("/api/admin/users", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: editingUserId,
+                    ...newUser,
+                    permissions: newUser.permissions,
+                })
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            setUsers(prev => prev.map(user => user.id === editingUserId ? data : user));
+            setIsModalOpen(false);
+            resetForm();
             await fetchUsers();
         } catch (err: any) {
             setError(err.message);
@@ -114,7 +168,7 @@ export default function UserManagement() {
                     <p className="text-gray-600">Create and manage admin accounts and permissions</p>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={openCreateModal}
                     className="px-6 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-all shadow-lg"
                 >
                     + Add New Admin
@@ -160,14 +214,22 @@ export default function UserManagement() {
                                         )}
                                     </div>
                                 </td>
-                                <td className="p-4">
+                                <td className="p-4 flex gap-3 items-center">
                                     {user.role !== "super_admin" && (
-                                        <button
-                                            onClick={() => handleDeleteUser(user.id)}
-                                            className="text-red-500 hover:text-red-700 font-bold text-sm"
-                                        >
-                                            Delete
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => openEditModal(user)}
+                                                className="text-blue-600 hover:text-blue-800 font-bold text-sm"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(user.id)}
+                                                className="text-red-500 hover:text-red-700 font-bold text-sm"
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
                                     )}
                                 </td>
                             </tr>
@@ -176,14 +238,14 @@ export default function UserManagement() {
                 </table>
             </div>
 
-            {/* Create User Modal */}
+            {/* Create/Edit User Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
                         <div className="p-6 bg-gray-50 border-b border-gray-100">
-                            <h2 className="text-xl font-bold">Add New Admin Account</h2>
+                            <h2 className="text-xl font-bold">{editingUserId ? "Edit Admin Account" : "Add New Admin Account"}</h2>
                         </div>
-                        <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+                        <form onSubmit={editingUserId ? handleUpdateUser : handleCreateUser} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
                                 <input
@@ -206,13 +268,22 @@ export default function UserManagement() {
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    required
-                                    className="w-full p-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                                    value={newUser.password}
-                                    onChange={e => setNewUser({ ...newUser, password: e.target.value })}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        required={!editingUserId}
+                                        className="w-full p-3 pr-10 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                                        value={newUser.password}
+                                        onChange={e => setNewUser({ ...newUser, password: e.target.value })}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(prev => !prev)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-600"
+                                    >
+                                        {showPassword ? "Hide" : "Show"}
+                                    </button>
+                                </div>
                             </div>
 
                             <div>
@@ -237,7 +308,10 @@ export default function UserManagement() {
                             <div className="flex gap-4 pt-4">
                                 <button
                                     type="button"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        resetForm();
+                                    }}
                                     className="flex-1 px-4 py-3 border border-gray-200 rounded-lg font-bold text-gray-600 hover:bg-gray-50 transition-colors"
                                 >
                                     Cancel
@@ -246,7 +320,7 @@ export default function UserManagement() {
                                     type="submit"
                                     className="flex-1 px-4 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-all shadow-md"
                                 >
-                                    Create User
+                                    {editingUserId ? "Update User" : "Create User"}
                                 </button>
                             </div>
                         </form>

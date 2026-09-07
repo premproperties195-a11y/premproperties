@@ -106,6 +106,58 @@ export async function POST(request: Request) {
     }
 }
 
+export async function PUT(request: Request) {
+    try {
+        if (!await isSuperAdmin()) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const updatedUser = await request.json();
+        const usersPath = ensureUsersFile();
+        const rawData = fs.readFileSync(usersPath, "utf-8");
+        const users = rawData ? JSON.parse(rawData) : [];
+
+        const index = users.findIndex((user: any) => user.id === updatedUser.id);
+        if (index === -1) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        if (!updatedUser.email || !updatedUser.password) {
+            return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+        }
+
+        const duplicate = users.find((user: any) =>
+            user.id !== updatedUser.id && user.email?.toLowerCase() === updatedUser.email?.toLowerCase()
+        );
+
+        if (duplicate) {
+            return NextResponse.json({ error: "User already exists" }, { status: 400 });
+        }
+
+        const userToUpdate = {
+            ...users[index],
+            ...updatedUser,
+            username: String(updatedUser.username || users[index].username).trim(),
+            email: String(updatedUser.email).trim(),
+            permissions: Array.isArray(updatedUser.permissions) ? updatedUser.permissions : users[index].permissions || [],
+            role: updatedUser.role || users[index].role || "sub_admin",
+            password: String(updatedUser.password),
+        };
+
+        users[index] = userToUpdate;
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+
+        const { password, ...safeUser } = userToUpdate;
+        return NextResponse.json(safeUser);
+    } catch (error: any) {
+        if (error.message?.includes('NEXT_STATIC_GEN_BAILOUT') || error.code === 'NEXT_STATIC_GEN_BAILOUT') {
+            throw error;
+        }
+        console.error("PUT Users Error:", error);
+        return NextResponse.json({ error: error.message || "Failed to update user" }, { status: 500 });
+    }
+}
+
 export async function DELETE(request: Request) {
     try {
         if (!await isSuperAdmin()) {
