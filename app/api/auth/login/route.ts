@@ -1,6 +1,28 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 import { supabase } from "../../../lib/supabase";
 import { verifyPassword } from "../../../lib/password";
+
+const getLocalUsersFilePath = () => {
+    const configuredPath = process.env.USERS_DATA_PATH;
+    if (configuredPath) return configuredPath;
+    return path.join(process.cwd(), "app", "data", "users.json");
+};
+
+const readLocalUsers = () => {
+    try {
+        const usersPath = getLocalUsersFilePath();
+        if (!fs.existsSync(usersPath)) return [];
+
+        const raw = fs.readFileSync(usersPath, "utf-8");
+        const users = raw ? JSON.parse(raw) : [];
+        return Array.isArray(users) ? users : [];
+    } catch (error) {
+        console.error("Local admin users read error:", error);
+        return [];
+    }
+};
 
 export async function POST(request: Request) {
     try {
@@ -28,14 +50,26 @@ export async function POST(request: Request) {
             );
         }
 
+        let user: any = null;
+
         // Query admin_users from Supabase
-        const { data: user, error } = await supabase
+        const { data: supabaseUser, error } = await supabase
             .from('admin_users')
             .select('*')
             .eq('email', email)
-            .single();
+            .maybeSingle();
 
-        if (error || !user) {
+        if (!error && supabaseUser) {
+            user = supabaseUser;
+        } else {
+            const localUsers = readLocalUsers();
+            const localUser = localUsers.find((item: any) => item.email?.toLowerCase() === String(email).trim().toLowerCase());
+            if (localUser) {
+                user = localUser;
+            }
+        }
+
+        if (!user) {
             return NextResponse.json(
                 { error: "Invalid email or password" },
                 { status: 401 }
@@ -46,16 +80,15 @@ export async function POST(request: Request) {
         // NOTE: If password is not hashed yet (plain text), we compare directly
         // This provides backward compatibility during migration
         let isValidPassword = false;
+        const storedPassword = user.password || "";
 
-        if (user.password.startsWith('$2')) {
-            // Password is hashed (bcrypt hashes start with $2a$, $2b$, or $2y$)
-            isValidPassword = await verifyPassword(password, user.password);
+        if (storedPassword.startsWith('$2')) {
+            isValidPassword = await verifyPassword(password, storedPassword);
         } else {
-            // Plain text password (backward compatibility)
-            isValidPassword = password === user.password;
-
-            // TODO: Consider hashing this password on next login
-            console.warn('Plain text password detected for user:', email);
+            isValidPassword = password === storedPassword;
+            if (user.email) {
+                console.warn('Plain text password detected for user:', user.email);
+            }
         }
 
         if (!isValidPassword) {
