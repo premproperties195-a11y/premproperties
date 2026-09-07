@@ -5,7 +5,37 @@ import { isSuperAdmin } from "../../../lib/auth";
 
 export const dynamic = "force-dynamic";
 
-const usersPath = path.join(process.cwd(), "app/data/users.json");
+const getUsersStoragePath = () => {
+    const configuredPath = process.env.USERS_DATA_PATH;
+    if (configuredPath) return configuredPath;
+
+    return path.join(process.env.TMPDIR || "/tmp", "premproperties-users.json");
+};
+
+const ensureUsersFile = () => {
+    const storagePath = getUsersStoragePath();
+    const storageDir = path.dirname(storagePath);
+
+    fs.mkdirSync(storageDir, { recursive: true });
+
+    if (!fs.existsSync(storagePath)) {
+        const defaultUsers = [
+            {
+                id: "master-admin-001",
+                username: "Super Admin",
+                email: "admin@prem.com",
+                password: "admin123",
+                role: "super_admin",
+                permissions: ["all"],
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        fs.writeFileSync(storagePath, JSON.stringify(defaultUsers, null, 2));
+    }
+
+    return storagePath;
+};
 
 export async function GET() {
     try {
@@ -13,27 +43,10 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        if (!fs.existsSync(usersPath)) {
-            // Create the file with default admin if it doesn't exist
-            const defaultUsers = [
-                {
-                    id: "master-admin-001",
-                    username: "Super Admin",
-                    email: "admin@prem.com",
-                    password: "admin123",
-                    role: "super_admin",
-                    permissions: ["all"],
-                    createdAt: new Date().toISOString()
-                }
-            ];
-            fs.mkdirSync(path.dirname(usersPath), { recursive: true });
-            fs.writeFileSync(usersPath, JSON.stringify(defaultUsers, null, 2));
-        }
-
+        const usersPath = ensureUsersFile();
         const data = fs.readFileSync(usersPath, "utf-8");
         const users = data ? JSON.parse(data) : [];
 
-        // Don't return passwords
         const safeUsers = users.map(({ password, ...u }: any) => u);
         return NextResponse.json(safeUsers);
     } catch (error: any) {
@@ -52,26 +65,29 @@ export async function POST(request: Request) {
         }
 
         const newUser = await request.json();
-
-        if (!fs.existsSync(usersPath)) {
-            fs.mkdirSync(path.dirname(usersPath), { recursive: true });
-            fs.writeFileSync(usersPath, JSON.stringify([], null, 2));
-        }
+        const usersPath = ensureUsersFile();
 
         const rawData = fs.readFileSync(usersPath, "utf-8");
         const users = rawData ? JSON.parse(rawData) : [];
 
-        // Basic validation
         if (!newUser.email || !newUser.password) {
             return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
         }
 
-        if (users.find((u: any) => u.email === newUser.email)) {
+        if (users.find((u: any) => u.email?.toLowerCase() === newUser.email?.toLowerCase())) {
             return NextResponse.json({ error: "User already exists" }, { status: 400 });
+        }
+
+        if (!newUser.username) {
+            return NextResponse.json({ error: "Full name is required" }, { status: 400 });
         }
 
         const userToAdd = {
             ...newUser,
+            username: String(newUser.username).trim(),
+            email: String(newUser.email).trim(),
+            permissions: Array.isArray(newUser.permissions) ? newUser.permissions : [],
+            role: newUser.role || "sub_admin",
             id: Date.now().toString(),
             createdAt: new Date().toISOString()
         };
@@ -97,10 +113,7 @@ export async function DELETE(request: Request) {
         }
 
         const { id } = await request.json();
-
-        if (!fs.existsSync(usersPath)) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
+        const usersPath = ensureUsersFile();
 
         const users = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
         const filteredUsers = users.filter((u: any) => u.id !== id);

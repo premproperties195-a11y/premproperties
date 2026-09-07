@@ -70,9 +70,10 @@ export default function UserManagement() {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            setUsers([...users, data]);
+            setUsers(prev => [...prev, data]);
             setIsModalOpen(false);
             setNewUser({ username: "", email: "", password: "", role: "sub_admin", permissions: [] });
+            await fetchUsers();
         } catch (err: any) {
             setError(err.message);
         }
