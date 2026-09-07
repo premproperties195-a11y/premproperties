@@ -133,12 +133,19 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     area: (payload as any).specs?.area || "",
                     beds: (payload as any).specs?.beds || 0,
                     baths: (payload as any).specs?.baths || 0,
-                    layout_image: layoutImageValue,
+                    layout_image: layoutImageValue || null,
                 },
             } as any;
 
             delete safePayload.layout_image;
             delete safePayload.layoutImage;
+
+            if (!layoutImageValue) {
+                safePayload.specs = {
+                    ...safePayload.specs,
+                    layout_image: null,
+                };
+            }
 
             // Clean up empty strings in arrays before saving
             if (Array.isArray(safePayload.images)) {
@@ -342,6 +349,15 @@ export default function PropertyEditClient({ id }: { id: string }) {
                                 onUploadSuccess={(url) => setFormData({ ...formData, layout_image: url })}
                                 buttonText="📐 Upload"
                             />
+                            {formData.layout_image && (
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, layout_image: "" })}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold"
+                                >
+                                    Remove
+                                </button>
+                            )}
                         </div>
                     </div>
 
