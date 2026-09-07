@@ -21,6 +21,58 @@ export default function InquiriesAdmin() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const filterByTab = (items: Inquiry[], tab: "new" | "contacted") => {
+        return items.filter((item) => (item.status === tab || (!item.status && tab === "new")));
+    };
+
+    const exportTabToExcel = (tab: "new" | "contacted") => {
+        const exportRows = filterByTab(inquiries, tab);
+
+        if (!exportRows.length) {
+            alert(`No ${tab === "new" ? "new requests" : "contacted"} inquiries found to export.`);
+            return;
+        }
+
+        const headers = [
+            "Date",
+            "Name",
+            "Email",
+            "Phone",
+            "Property",
+            "Message",
+            "Status",
+        ];
+
+        const csvRows = [headers, ...exportRows.map((inquiry) => {
+            const dateValue = inquiry.date ? new Date(inquiry.date).toLocaleDateString() : "N/A";
+            const safeValues = [
+                dateValue,
+                inquiry.name || "",
+                inquiry.email || "",
+                inquiry.phone || "",
+                inquiry.property || "General",
+                (inquiry.message || "").replace(/\r?\n/g, " "),
+                tab === "new" ? "New Request" : "Contacted",
+            ].map((value) => `"${String(value).replace(/"/g, '""')}"`);
+
+            return safeValues;
+        })];
+
+        const csvContent = csvRows.map((row) => row.join(",")).join("\n");
+        const blob = new Blob([`\uFEFF${csvContent}`], {
+            type: "application/vnd.ms-excel;charset=utf-8;",
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${tab === "new" ? "new-requests" : "contacted-inquiries"}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     useEffect(() => {
         fetchInquiries();
     }, []);
@@ -84,7 +136,7 @@ export default function InquiriesAdmin() {
     };
 
     const filteredInquiries = useMemo(() => {
-        return inquiries.filter(i => (i.status === activeTab || (!i.status && activeTab === "new")));
+        return filterByTab(inquiries, activeTab);
     }, [inquiries, activeTab]);
 
     if (loading) return <div className="text-center py-12">Loading...</div>;
@@ -107,19 +159,36 @@ export default function InquiriesAdmin() {
                 <p className="text-gray-600">Manage messages from the contact form</p>
             </div>
 
-            <div className="flex gap-2 mb-8 bg-gray-200 p-1 rounded-xl w-fit">
-                <button
-                    onClick={() => setActiveTab("new")}
-                    className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "new" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
-                >
-                    New Requests
-                </button>
-                <button
-                    onClick={() => setActiveTab("contacted")}
-                    className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "contacted" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
-                >
-                    Contacted
-                </button>
+            <div className="flex flex-col gap-4 mb-8 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex gap-2 bg-gray-200 p-1 rounded-xl w-fit">
+                    <button
+                        onClick={() => setActiveTab("new")}
+                        className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "new" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
+                    >
+                        New Requests
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("contacted")}
+                        className={`px-6 py-2 rounded-lg font-bold transition-all ${activeTab === "contacted" ? "bg-white text-black shadow-sm" : "text-gray-500"}`}
+                    >
+                        Contacted
+                    </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        onClick={() => exportTabToExcel("new")}
+                        className="px-4 py-2 bg-[var(--primary)] text-black font-bold rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                        Export New Requests
+                    </button>
+                    <button
+                        onClick={() => exportTabToExcel("contacted")}
+                        className="px-4 py-2 bg-emerald-500 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                        Export Contacted
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
