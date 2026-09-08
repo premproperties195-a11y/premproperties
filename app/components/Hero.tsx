@@ -55,7 +55,7 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
   const currentBanner = slides[index] || defaultBanner;
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-gray-900">
+    <section className="relative h-[72vh] w-full overflow-hidden bg-gray-900 sm:h-[80vh] md:h-screen">
       {/* BACKGROUND */}
       <AnimatePresence mode="popLayout">
         <motion.div
@@ -91,30 +91,31 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
       </AnimatePresence>
 
       {/* CONTENT */}
-      <div className="relative z-20 h-full flex flex-col justify-center items-center text-center px-4">
+      <div className="relative z-20 h-full flex flex-col justify-center items-center text-center px-4 sm:px-6 md:px-10">
         <motion.div
           key={currentBanner.title + "-text"}
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
+          className="w-full max-w-4xl"
         >
           {currentBanner.tags && (
-            <div className="flex gap-2 justify-center mb-6">
+            <div className="mb-4 flex flex-wrap justify-center gap-2 sm:mb-6">
               {currentBanner.tags.split(",").map((tag: string, i: number) => (
-                <span key={i} className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] uppercase tracking-widest rounded-full">
+                <span key={i} className="px-2.5 py-1 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[9px] uppercase tracking-widest rounded-full sm:px-3 sm:text-[10px]">
                   {tag.trim()}
                 </span>
               ))}
             </div>
           )}
           <h1
-            className="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight leading-tight"
+            className="text-4xl font-serif font-bold mb-4 tracking-tight leading-tight sm:text-5xl md:text-6xl lg:text-7xl"
             style={{ color: currentBanner.titleColor || "#FFFFFF" }}
           >
             {currentBanner.title}
           </h1>
           {currentBanner.subtitle && (
-            <p className="text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-2xl text-base text-white/90 font-light leading-relaxed sm:text-xl md:text-2xl">
               {currentBanner.subtitle}
             </p>
           )}
@@ -125,11 +126,11 @@ export default function Hero({ banner: initialBanner }: { banner?: any }) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1, duration: 0.8 }}
-          className="mt-12"
+          className="mt-8 sm:mt-10 md:mt-12"
         >
           <a
             href="#projects"
-            className="inline-block px-12 py-4 bg-[var(--primary)] text-black font-bold text-lg rounded-sm hover:bg-white hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-all duration-500 uppercase tracking-widest"
+            className="inline-block px-7 py-3 bg-[var(--primary)] text-black font-bold text-sm rounded-sm transition-all duration-500 uppercase tracking-widest hover:bg-white hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] sm:px-10 sm:text-base md:px-12 md:py-4 md:text-lg"
           >
             Explore Projects
           </a>

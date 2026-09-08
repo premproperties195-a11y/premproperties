@@ -24,9 +24,9 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
         fetchLive();
     }, []);
     return (
-        <section className="py-16 px-6 bg-white overflow-hidden">
-            <div className="max-w-7xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+        <section className="py-14 px-4 sm:px-6 bg-white overflow-hidden md:py-16">
+            <div className="mx-auto max-w-7xl">
+                <div className="grid gap-8 items-center md:grid-cols-2 md:gap-10 lg:gap-12">
                     {/* Text Side */}
                     <motion.div
                         initial={{ x: -50, opacity: 0 }}
@@ -35,10 +35,10 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                         transition={{ duration: 0.8 }}
                     >
                         <h2 className="text-[var(--primary)] font-bold uppercase tracking-widest text-sm mb-4">About PREM Properties</h2>
-                        <h3 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6 leading-tight">
+                        <h3 className="text-3xl font-serif font-bold text-gray-900 mb-4 leading-tight sm:text-4xl md:text-5xl">
                             {company.tagline || "Building Dreams, Creating Legacies"}
                         </h3>
-                        <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                        <p className="text-base text-gray-600 mb-6 leading-relaxed sm:text-lg">
                             {company.aboutShort || "With over 15 years of experience, we have redefined the skyline of Hyderabad."}
                         </p>
 
@@ -48,10 +48,10 @@ export default function HomeAbout({ company: initialCompany }: { company: any })
                             </blockquote>
                         )}
 
-                        <div className="grid grid-cols-3 gap-6 mb-8">
+                        <div className="grid grid-cols-2 gap-4 mb-8 sm:gap-6 md:grid-cols-3">
                             {company.stats?.map((stat: any) => (
-                                <div key={stat.label}>
-                                    <div className="text-3xl font-bold text-gray-900 mb-1">
+                                <div key={stat.label} className="min-w-0">
+                                    <div className="text-2xl font-bold text-gray-900 mb-1 sm:text-3xl">
                                         <AnimatedCounter value={stat.value} />
                                     </div>
                                     <div className="text-[10px] uppercase font-bold text-gray-400 tracking-wider font-sans">{stat.label}</div>

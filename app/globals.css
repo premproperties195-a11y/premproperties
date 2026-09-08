@@ -35,9 +35,22 @@ html[data-theme="dark"] {
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-[var(--background)] text-[var(--foreground)] antialiased transition-colors duration-300;
     font-family: var(--font-sans);
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
   }
 
   h1,
@@ -135,6 +148,18 @@ html[data-theme="dark"] .shadow-lg {
   @apply bg-[var(--primary)] w-8 rounded-full opacity-100;
 }
 
-html {
-  scroll-behavior: smooth;
+.container-shell {
+  @apply w-full mx-auto max-w-7xl px-4 sm:px-5 md:px-6;
+}
+
+.section-shell {
+  @apply w-full mx-auto max-w-7xl px-4 sm:px-5 md:px-6;
+}
+
+@media (max-width: 640px) {
+  .container-shell,
+  .section-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }

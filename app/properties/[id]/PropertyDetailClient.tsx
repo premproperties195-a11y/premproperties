@@ -87,12 +87,12 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 </div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-3 gap-12">
+            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-16 lg:grid lg:grid-cols-3 lg:gap-12">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-12">
+                <div className="space-y-8 lg:col-span-2 lg:space-y-12">
 
                     {/* Key Specs */}
-                    <div className="grid grid-cols-3 gap-4 p-6 bg-gray-900 rounded-lg border border-gray-100 shadow-sm">
+                    <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-100 bg-gray-900 p-4 shadow-sm sm:grid-cols-3 sm:p-6">
                         <div>
                             <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Price</p>
                             <p className="text-xl md:text-2xl font-bold text-[var(--primary)]">{property.price}</p>
@@ -118,7 +118,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                     {/* Amenities */}
                     <div>
                         <h2 className="text-2xl font-bold mb-6">Amenities</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                        <div className="grid grid-cols-1 gap-y-4 gap-x-5 sm:grid-cols-2 md:grid-cols-3">
                             {property.amenities?.map((amenity: string) => (
                                 <div key={amenity} className="flex items-center gap-2 text-gray-700">
                                     <span className="w-2 h-2 bg-[var(--primary)] rounded-full" />
@@ -132,7 +132,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                     {galleryImages.length > 0 && (
                         <div>
                             <h2 className="text-2xl font-bold mb-6">Gallery</h2>
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid gap-4 sm:grid-cols-2">
                                 {galleryImages.map((img: string, i: number) => (
                                     <img key={i} src={img} alt="Gallery" className="rounded-lg hover:opacity-90 transition-opacity cursor-pointer aspect-video object-cover shadow-md" />
                                 ))}
@@ -194,8 +194,8 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
 
             {/* LOCATION MAP */}
             <section className="bg-gray-50 py-16 border-t border-gray-200">
-                <div className="max-w-7xl mx-auto px-6">
-                    <h2 className="text-2xl font-bold mb-8">Property Location</h2>
+                <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                    <h2 className="mb-8 text-2xl font-bold">Property Location</h2>
                     <div className="w-full h-[450px] rounded-xl overflow-hidden shadow-lg border border-gray-200">
                         <PropertyMap
                             lat={property.latitude}

@@ -136,9 +136,9 @@ export default function GoogleReviews({
   };
 
   return (
-    <section className="py-16 bg-[var(--background)]">
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-center text-4xl md:text-6xl font-bold tracking-tight mb-8 md:mb-10 text-[var(--primary)]">
+    <section className="py-14 bg-[var(--background)] sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-[var(--primary)] sm:text-4xl md:mb-10 md:text-6xl">
           What Our Clients Say
         </h2>
 
@@ -176,7 +176,7 @@ export default function GoogleReviews({
                 return (
                   <article
                     key={`${review.name}-${index}`}
-                    className="snap-start w-[320px] sm:w-[360px] lg:w-[380px] bg-white border border-[#e7e7e7] rounded-[22px] p-5 shadow-[0_3px_20px_rgba(0,0,0,0.04)] transition-all duration-300"
+                    className="snap-start w-[290px] bg-white border border-[#e7e7e7] rounded-[22px] p-4 shadow-[0_3px_20px_rgba(0,0,0,0.04)] transition-all duration-300 sm:w-[340px] lg:w-[380px]"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl font-bold ${index % 3 === 0 ? "bg-[#7a3ce8] text-white" : index % 3 === 1 ? "bg-[#7cc7ef] text-[#0f172a]" : "bg-[#f7a3a3] text-[#111827]"}`}>

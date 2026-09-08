@@ -84,17 +84,17 @@ export default function Header({ nav }: { nav?: any[] }) {
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white py-4 shadow-sm" : "bg-transparent py-6"
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white py-4 shadow-sm" : "bg-transparent py-4 sm:py-5 md:py-6"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="container-shell flex items-center justify-between gap-3">
         {/* LOGO */}
-        <Link href="/" className="group relative z-50">
+        <Link href="/" className="group relative z-50 shrink-0">
           <img
             src={logoUrl}
             alt={company?.company?.name || "PREM Properties"}
             style={{ height: `${logoHeight}px` }}
-            className="w-auto object-contain"
+            className="w-auto max-h-[48px] sm:max-h-[56px] md:max-h-[72px] object-contain"
           />
         </Link>
 
@@ -144,15 +144,16 @@ export default function Header({ nav }: { nav?: any[] }) {
             <span>{themeToggleLabel}</span>
           </button>
 
-          <Link href="/contact/" className="px-6 py-2 bg-[var(--primary)] text-white text-sm font-bold uppercase tracking-wider hover:bg-black transition-colors rounded-sm shadow-md">
+          <Link href="/contact/" className="px-5 py-2 bg-[var(--primary)] text-white text-sm font-bold uppercase tracking-wider hover:bg-black transition-colors rounded-sm shadow-md">
             Enquire
           </Link>
         </nav>
 
         {/* MOBILE TOGGLE */}
         <button
-          className={`md:hidden relative z-50 focus:outline-none ${scrolled ? "text-black" : "text-white"}`}
+          className={`md:hidden relative z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/10 backdrop-blur-sm focus:outline-none ${scrolled ? "border-black/10 bg-white/80 text-black" : "text-white"}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
           <div className="space-y-1.5">
             <span className={`block w-6 h-0.5 transition-transform ${scrolled || mobileMenuOpen ? "bg-black" : "bg-white"} ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
@@ -170,36 +171,38 @@ export default function Header({ nav }: { nav?: any[] }) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "tween" }}
-            className="fixed inset-0 bg-white z-40 flex flex-col items-center justify-center space-y-8 md:hidden text-black"
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center space-y-6 bg-white px-6 text-black md:hidden"
           >
-            {navLinks.map((item, i) => (
-              <Link
-                key={i}
-                href={item.href?.endsWith("/") ? item.href : `${item.href}/`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-2xl font-sans font-bold hover:text-[var(--primary)] uppercase tracking-widest"
+            <div className="flex w-full max-w-sm flex-col items-center space-y-6">
+              {navLinks.map((item, i) => (
+                <Link
+                  key={i}
+                  href={item.href?.endsWith("/") ? item.href : `${item.href}/`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-xl font-sans font-bold hover:text-[var(--primary)] uppercase tracking-widest"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  toggleTheme();
+                  setMobileMenuOpen(false);
+                }}
+                className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-gray-100 px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-black"
               >
-                {item.label}
+                <span>{isDarkTheme ? "☀" : "☾"}</span>
+                <span>{themeToggleLabel}</span>
+              </button>
+              <Link
+                href="/contact/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-8 py-3 bg-[var(--primary)] text-white text-base font-bold uppercase tracking-wider hover:bg-black transition-colors rounded-sm shadow-md"
+              >
+                Enquire
               </Link>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                toggleTheme();
-                setMobileMenuOpen(false);
-              }}
-              className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-gray-100 px-5 py-3 text-base font-bold uppercase tracking-[0.2em] text-black"
-            >
-              <span>{isDarkTheme ? "☀" : "☾"}</span>
-              <span>{themeToggleLabel}</span>
-            </button>
-            <Link
-              href="/contact/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="px-8 py-3 bg-[var(--primary)] text-white text-lg font-bold uppercase tracking-wider hover:bg-black transition-colors rounded-sm shadow-md"
-            >
-              Enquire
-            </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

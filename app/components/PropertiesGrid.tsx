@@ -47,10 +47,10 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
     const filters = ["All", ...categories, "Rent"];
 
     return (
-        <section className="py-16 px-6">
-            <div className="max-w-7xl mx-auto">
+        <section className="px-4 py-14 sm:px-6 md:py-16">
+            <div className="mx-auto max-w-7xl">
                 {/* Filter Buttons */}
-                <div className="flex flex-wrap justify-center gap-4 mb-12">
+                <div className="mb-8 flex flex-wrap justify-center gap-3 sm:gap-4 sm:mb-12">
                     {filters.map((filter) => (
                         <button
                             key={filter}
@@ -66,7 +66,7 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
                 </div>
 
                 {/* Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
                     <AnimatePresence mode="popLayout">
                         {filteredProperties.map((project) => (
                             <motion.div

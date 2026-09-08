@@ -86,14 +86,14 @@ export default function HomeReelsPreview({ reels = [] }: { reels?: ReelItem[] })
   };
 
   return (
-    <section className="py-6 md:py-10 bg-[#f7f7f5]">
-      <div className="max-w-[820px] mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+    <section className="bg-[#f7f7f5] py-8 md:py-10">
+      <div className="mx-auto max-w-[820px] px-4 sm:px-5 md:px-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <span className="text-[var(--primary)] font-bold uppercase tracking-widest text-sm mb-2 block">
               Social Feed
             </span>
-            <h2 className="text-3xl md:text-5xl font-sans font-bold text-black">
+            <h2 className="text-3xl font-sans font-bold text-black md:text-5xl">
               Reels & Shorts
             </h2>
           </div>
@@ -130,7 +130,7 @@ export default function HomeReelsPreview({ reels = [] }: { reels?: ReelItem[] })
               return (
                 <div
                   key={`${reel.url}-${index}`}
-                  className="min-w-0 shrink-0 w-[180px] sm:w-[200px] md:w-[220px]"
+                  className="min-w-0 shrink-0 w-[160px] sm:w-[180px] md:w-[220px]"
                 >
                   <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300">
                     <div className="relative aspect-[4/5] bg-black overflow-hidden">

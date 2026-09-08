@@ -21,8 +21,8 @@ export default function Footer() {
   const logoHeight = companyData?.appearance?.logoHeight || "96";
 
   return (
-    <footer className="bg-black text-white py-16 border-t border-gray-900">
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12">
+    <footer className="bg-black text-white py-12 border-t border-gray-900 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 grid gap-8 sm:grid-cols-2 md:grid-cols-4 md:gap-10 lg:gap-12">
 
         {/* Brand */}
         <div>
@@ -83,7 +83,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-gray-900 text-center text-xs text-gray-500">
+      <div className="mx-auto mt-10 max-w-7xl px-4 pt-8 text-center text-xs text-gray-500 sm:px-6 sm:mt-12 md:mt-16">
         <p>
           {footer.copyright || `© ${new Date().getFullYear()} PREM Properties. All rights reserved.`}
         </p>

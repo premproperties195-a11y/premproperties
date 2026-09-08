@@ -56,14 +56,14 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
   if (!safeProjects.length) return null;
 
   return (
-    <section id="projects" className="py-16 bg-[#0a0a0a]">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-8">
+    <section id="projects" className="py-14 bg-[#0a0a0a] sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mb-8 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="text-4xl md:text-5xl font-sans font-bold text-white mb-3">
+            <h2 className="mb-3 text-3xl font-sans font-bold text-white sm:text-4xl md:text-5xl">
               Our Projects
             </h2>
-            <p className="text-gray-400 max-w-xl">
+            <p className="max-w-xl text-sm text-gray-400 sm:text-base">
               Explore our portfolio of premium residential and commercial developments.
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
           ))}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {displayProjects.map((p) => (
               <motion.div
