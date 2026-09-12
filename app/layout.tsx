@@ -57,11 +57,13 @@ export async function generateMetadata() {
     alternates: { canonical: "/" },
     icons: {
       icon: [
+        { url: "/favicon.ico", type: "image/x-icon" },
+        { url: "/favicon.png", type: "image/png" },
         { url: "/favicon.svg", type: "image/svg+xml" },
         { url: "/logo.png", type: "image/png" }
       ],
-      shortcut: "/logo.png",
-      apple: "/logo.png",
+      shortcut: "/favicon.ico",
+      apple: "/favicon.png",
     },
     openGraph: {
       title,
