@@ -56,7 +56,10 @@ export async function generateMetadata() {
     authors: [{ name: "PREM Properties" }],
     alternates: { canonical: "/" },
     icons: {
-      icon: [{ url: "/logo.png", type: "image/png" }],
+      icon: [
+        { url: "/favicon.svg", type: "image/svg+xml" },
+        { url: "/logo.png", type: "image/png" }
+      ],
       shortcut: "/logo.png",
       apple: "/logo.png",
     },
