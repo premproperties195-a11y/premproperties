@@ -76,12 +76,18 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
 
   useEffect(() => {
     const fetchData = async () => {
+      const nextProps = Array.isArray(initialProjects) && initialProjects.length > 0
+        ? initialProjects.map((p: any) => ({ ...p, id: String(p.id) }))
+        : [];
+
       const { data: propData, error: propError } = await supabase
         .from('properties')
         .select('*')
         .order('created_at', { ascending: false });
 
-      const normalizedProjects = Array.isArray(propData) ? propData.map((p: any) => ({ ...p, id: String(p.id) })) : [];
+      const normalizedProjects = Array.isArray(propData) && propData.length > 0
+        ? propData.map((p: any) => ({ ...p, id: String(p.id) }))
+        : nextProps;
 
       if (normalizedProjects.length) {
         setProjects(normalizedProjects);
@@ -110,9 +116,7 @@ export default function FeaturedProjects({ projects: initialProjects }: { projec
       setCategories(nextCategories);
     };
 
-    if (!Array.isArray(initialProjects) || initialProjects.length === 0) {
-      fetchData();
-    }
+    fetchData();
   }, [initialProjects]);
 
   const safeProjects = Array.isArray(projects) ? projects : [];

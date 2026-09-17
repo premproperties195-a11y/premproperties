@@ -76,12 +76,18 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
 
     useEffect(() => {
         const fetchData = async () => {
+            const nextProps = Array.isArray(initialProperties) && initialProperties.length > 0
+                ? initialProperties.map((p: any) => ({ ...p, id: String(p.id) }))
+                : [];
+
             const { data: propData, error: propError } = await supabase
                 .from('properties')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            const normalizedProperties = Array.isArray(propData) ? propData.map((p: any) => ({ ...p, id: String(p.id) })) : [];
+            const normalizedProperties = Array.isArray(propData) && propData.length > 0
+                ? propData.map((p: any) => ({ ...p, id: String(p.id) }))
+                : nextProps;
 
             if (normalizedProperties.length || !propError) {
                 setProperties(normalizedProperties);
@@ -110,9 +116,7 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
             setCategories(nextCategories);
         };
 
-        if (!Array.isArray(initialProperties) || initialProperties.length === 0) {
-            fetchData();
-        }
+        fetchData();
     }, [initialProperties]);
 
     const safeProperties = Array.isArray(properties) ? properties : [];
