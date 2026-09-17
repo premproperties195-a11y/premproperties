@@ -32,6 +32,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
         amenities: [""],
         specs: {
             area: "",
+            areaUnit: "Sq. Yds",
             beds: 0,
             baths: 0,
         },
@@ -42,7 +43,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
         rent_frequency: "Month",
         documents: [] as string[], // New field for original papers
     });
-    const [categories, setCategories] = useState<string[]>(["Residential", "Commercial", "Villa", "Land"]);
+    const [categories, setCategories] = useState<string[]>(["Residential", "Commercial", "Villa", "Land", "Agriculture Land"]);
 
     useEffect(() => {
         fetchSettings();
@@ -98,6 +99,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 documents: Array.isArray(data.documents) ? data.documents : [],
                 specs: {
                     area: data.specs?.area || "",
+                    areaUnit: data.specs?.areaUnit || (data.specs?.area?.includes("Acres") ? "Acres" : data.specs?.area?.includes("Gunta") ? "Gunta" : "Sq. Yds"),
                     beds: data.specs?.beds || 0,
                     baths: data.specs?.baths || 0,
                     layout_image: data.specs?.layout_image || data.specs?.layoutImage || data.layout_image || data.layoutImage || "",
@@ -136,6 +138,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 specs: {
                     ...(payload as any).specs,
                     area: (payload as any).specs?.area || "",
+                    areaUnit: (payload as any).specs?.areaUnit || "Sq. Yds",
                     beds: (payload as any).specs?.beds || 0,
                     baths: (payload as any).specs?.baths || 0,
                     layout_image: layoutImageValue || null,
@@ -483,13 +486,24 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     {/* Specs */}
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-2">Area</label>
-                        <input
-                            type="text"
-                            value={formData.specs.area}
-                            onChange={(e) => setFormData({ ...formData, specs: { ...formData.specs, area: e.target.value } })}
-                            placeholder="4500 Sq. Ft."
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
-                        />
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={formData.specs.area}
+                                onChange={(e) => setFormData({ ...formData, specs: { ...formData.specs, area: e.target.value } })}
+                                placeholder={formData.category === "Agriculture Land" ? "1.5" : "4500"}
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                            />
+                            <select
+                                value={formData.specs.areaUnit || "Sq. Yds"}
+                                onChange={(e) => setFormData({ ...formData, specs: { ...formData.specs, areaUnit: e.target.value } })}
+                                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none bg-gray-50 font-bold"
+                            >
+                                <option value="Sq. Yds">Sq. Yds</option>
+                                <option value="Acres">Acres</option>
+                                <option value="Gunta">Gunta</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>

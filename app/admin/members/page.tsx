@@ -84,11 +84,11 @@ export default function MemberManagement() {
     if (loading) return <div className="p-8">Loading members...</div>;
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="max-w-6xl mx-auto w-full px-0 md:px-2">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Member Management</h1>
-                    <p className="text-gray-600">Create client accounts for document viewing access</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Member Management</h1>
+                    <p className="text-sm md:text-base text-gray-600">Create client accounts for document viewing access</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
@@ -105,7 +105,8 @@ export default function MemberManagement() {
             )}
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left border-collapse">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[720px] text-left border-collapse">
                     <thead className="bg-gray-50 border-b border-gray-100">
                         <tr>
                             <th className="p-4 font-bold text-gray-600">Name</th>
@@ -140,7 +141,8 @@ export default function MemberManagement() {
                             </tr>
                         )}
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
 
             {/* Create Member Modal */}

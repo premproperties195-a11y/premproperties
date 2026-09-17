@@ -103,7 +103,10 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                         </div>
                         <div>
                             <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Area</p>
-                            <p className="text-xl font-bold text-white">{property.specs?.area}</p>
+                            <p className="text-xl font-bold text-white">
+                                {property.specs?.area || "-"}
+                                {property.specs?.area && property.specs?.areaUnit ? ` ${property.specs.areaUnit}` : ""}
+                            </p>
                         </div>
                     </div>
 

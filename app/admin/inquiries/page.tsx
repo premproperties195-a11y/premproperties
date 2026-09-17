@@ -192,7 +192,8 @@ export default function InquiriesAdmin() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[980px] text-left">
                     <thead className="bg-gray-50 border-b border-gray-100">
                         <tr>
                             <th className="px-6 py-4 font-bold text-gray-700">Date</th>
@@ -266,7 +267,8 @@ export default function InquiriesAdmin() {
                             ))
                         )}
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
         </div>
     );

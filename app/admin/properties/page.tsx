@@ -50,22 +50,23 @@ export default function PropertiesAdmin() {
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-8">
+        <div className="w-full">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Properties</h1>
-                    <p className="text-gray-600">Manage your property listings</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Properties</h1>
+                    <p className="text-sm md:text-base text-gray-600">Manage your property listings</p>
                 </div>
                 <Link
                     href="/admin/properties/new"
-                    className="bg-[var(--primary)] text-black px-6 py-3 rounded-lg font-bold hover:bg-black hover:text-white transition-colors"
+                    className="bg-[var(--primary)] text-black px-6 py-3 rounded-lg font-bold hover:bg-black hover:text-white transition-colors text-center"
                 >
                     + Add Property
                 </Link>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full">
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[780px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">Property</th>
@@ -81,7 +82,7 @@ export default function PropertiesAdmin() {
                             <tr key={property.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
-                                        <img src={property.image} alt={property.title} className="w-16 h-16 object-cover rounded-lg" />
+                                        <img src={property.image} alt={property.title} className="w-12 h-12 md:w-16 md:h-16 object-cover rounded-lg" />
                                         <div>
                                             <div className="font-bold text-gray-900">{property.title}</div>
                                             <div className="text-sm text-gray-500">{property.category}</div>
@@ -115,7 +116,8 @@ export default function PropertiesAdmin() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                    </table>
+                </div>
 
                 {properties.length === 0 && (
                     <div className="text-center py-12 text-gray-500">

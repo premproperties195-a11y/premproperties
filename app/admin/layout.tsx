@@ -149,8 +149,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-full w-64 bg-gray-900 text-white flex flex-col z-50 transition-transform duration-300 ${mobileNavOpen ? "translate-x-0" : "-translate-x-full"
-                    } md:translate-x-0`}
+                className={`fixed left-0 top-0 h-full w-72 bg-gray-900 text-white flex flex-col z-50 transition-transform duration-300 ${mobileNavOpen ? "translate-x-0" : "-translate-x-full"
+                    } md:w-64 md:translate-x-0`}
             >
                 <div className="p-6 flex flex-col items-center text-center border-b border-gray-800">
                     <Link href="/">
@@ -169,6 +169,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <Link
                             key={item.href}
                             href={item.href}
+                            onClick={() => setMobileNavOpen(false)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${pathname === item.href
                                 ? "bg-[var(--primary)] text-black font-bold"
                                 : "hover:bg-gray-800"
@@ -191,7 +192,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </aside>
 
             {/* Main Content */}
-            <main className="md:ml-64 pt-20 px-4 pb-8 md:p-8">
+            <main className="pt-20 px-3 pb-8 md:ml-64 md:px-6 md:py-8 lg:px-8">
                 {isLoaded ? children : <div className="text-center py-12">Loading...</div>}
             </main>
         </div>

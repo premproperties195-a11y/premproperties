@@ -56,7 +56,7 @@ export default function SettingsAdmin() {
             }
         },
         propertyConfig: {
-            categories: ["Residential", "Commercial", "Villa", "Land"]
+            categories: ["Residential", "Commercial", "Villa", "Land", "Agriculture Land"]
         }
     });
 
