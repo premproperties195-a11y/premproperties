@@ -73,6 +73,85 @@ html[data-theme="dark"] {
     @apply px-6 py-3 bg-[var(--primary)] text-white font-bold uppercase tracking-wider rounded-sm hover:bg-[var(--primary-dark)] transition-all duration-300 shadow-md hover:shadow-lg;
   }
 
+  .property-rich-text {
+    @apply text-gray-700;
+  }
+
+  .property-rich-text p,
+  .property-rich-text ul,
+  .property-rich-text ol,
+  .property-rich-text li,
+  .property-rich-text strong,
+  .property-rich-text em,
+  .property-rich-text a {
+    @apply leading-relaxed;
+  }
+
+  .property-rich-text p {
+    @apply mb-3;
+  }
+
+  .property-rich-text ul,
+  .property-rich-text ol {
+    @apply my-3 pl-6;
+  }
+
+  .property-rich-text li {
+    @apply mb-1;
+  }
+
+  .property-rich-text ul {
+    @apply list-disc;
+  }
+
+  .property-rich-text ol {
+    @apply list-decimal;
+  }
+
+  .property-rich-text a {
+    @apply text-blue-600 underline;
+  }
+
+  .property-rich-text strong {
+    @apply font-bold text-gray-900;
+  }
+
+  .property-rich-text em {
+    @apply italic;
+  }
+
+  .rich-text-editor-content {
+    min-height: 180px;
+    line-height: 1.7;
+  }
+
+  .rich-text-editor-content ul,
+  .rich-text-editor-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .rich-text-editor-content ul {
+    list-style: disc;
+  }
+
+  .rich-text-editor-content ol {
+    list-style: decimal;
+  }
+
+  .rich-text-editor-content a {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  .rich-text-editor-content strong {
+    font-weight: 700;
+  }
+
+  .rich-text-editor-content em {
+    font-style: italic;
+  }
+
   .btn-outline {
     @apply px-6 py-3 border-2 border-[var(--foreground)] text-[var(--foreground)] font-bold uppercase tracking-wider rounded-sm hover:bg-[var(--foreground)] hover:text-white transition-all duration-300;
   }

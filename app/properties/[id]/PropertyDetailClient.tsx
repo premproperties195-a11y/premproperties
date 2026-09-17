@@ -7,6 +7,7 @@ import Link from "next/link";
 import PropertyEnquiry from "../../components/PropertyEnquiry";
 import { supabase } from "../../lib/supabase";
 import dynamic from "next/dynamic";
+import DOMPurify from "isomorphic-dompurify";
 
 const PropertyMap = dynamic(() => import("../../components/PropertyMap"), {
     ssr: false,
@@ -63,6 +64,9 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
     const galleryImages = Array.isArray(property?.images) ? property.images.filter((img: any) => img && img.trim() !== "") : [];
     const layoutImage = property?.layout_image || property?.layoutImage || property?.specs?.layout_image || property?.specs?.layoutImage;
     const hasLayoutImage = typeof layoutImage === "string" ? layoutImage.trim() !== "" : Boolean(layoutImage);
+    const sanitizedDescription = typeof property?.description === "string"
+        ? DOMPurify.sanitize(property.description, { USE_PROFILES: { html: true } })
+        : "";
 
     return (
         <main className="min-h-screen bg-white">
@@ -114,9 +118,10 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                     {/* Description */}
                     <div>
                         <h2 className="text-2xl font-bold mb-4">About the Property</h2>
-                        <p className="text-gray-600 leading-relaxed text-lg">
-                            {property.description}
-                        </p>
+                        <div
+                            className="property-rich-text text-gray-700 leading-relaxed text-lg"
+                            dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+                        />
                     </div>
 
                     {/* Amenities */}

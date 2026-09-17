@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import CloudinaryUpload from "../../../components/CloudinaryUpload";
+import RichTextEditor from "../../../components/RichTextEditor";
 import { supabase } from "../../../lib/supabase";
 
 const MapPicker = dynamic(() => import("../../../components/MapPicker"), {
@@ -400,12 +401,10 @@ export default function PropertyEditClient({ id }: { id: string }) {
 
                     <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Description *</label>
-                        <textarea
+                        <RichTextEditor
                             value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            rows={4}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
-                            required
+                            onChange={(value) => setFormData({ ...formData, description: value })}
+                            placeholder="Write the property description with bold, italic, lists, and links..."
                         />
                     </div>
 
