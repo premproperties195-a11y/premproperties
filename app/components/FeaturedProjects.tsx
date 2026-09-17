@@ -25,26 +25,18 @@ const categoryAliases: Record<string, string[]> = {
   "commercial plots": ["commercial plot", "commercial plots", "commercial property", "commercial properties", "commercial"],
 };
 
-const buildCategoryMatches = (value: string | null | undefined) => {
+const canonicalizeCategory = (value: string | null | undefined) => {
   const raw = normalizeFilterKey(value);
-  if (!raw) return new Set<string>();
+  if (!raw) return "";
 
-  const variants = new Set<string>([raw]);
-  const compact = raw.replace(/\s+(plots?|houses?|apartments?|villas?|commercial|residential|land|agriculture|agricultural|farmland)$/, "");
-  if (compact && compact !== raw) variants.add(compact);
-
-  Object.entries(categoryAliases).forEach(([key, aliases]) => {
-    if (raw === key || aliases.some(alias => raw === alias || raw.includes(alias) || alias.includes(raw))) {
-      variants.add(key);
-      aliases.forEach(alias => variants.add(normalizeFilterKey(alias)));
+  for (const [canonical, aliases] of Object.entries(categoryAliases)) {
+    const variants = new Set([canonical, ...aliases]);
+    if (variants.has(raw)) {
+      return canonical;
     }
-  });
-
-  if (raw.includes(" and ")) {
-    variants.add(raw.replace(/\s+and\s+/g, " "));
   }
 
-  return variants;
+  return raw;
 };
 
 const matchesFilter = (project: any, filter: string) => {
@@ -61,17 +53,18 @@ const matchesFilter = (project: any, filter: string) => {
     project?.category,
     project?.property_type,
     project?.listing_type,
-    project?.type,
     project?.title,
     project?.location,
   ];
 
   return candidateValues.some((value) => {
-    const variants = buildCategoryMatches(value);
-    return Array.from(variants).some((variant) => {
-      if (!variant) return false;
-      return variant === filterKey || categoryAliases[filterKey]?.some(alias => alias === variant) || filterKey.includes(variant) || variant.includes(filterKey);
-    });
+    const normalized = canonicalizeCategory(value);
+    if (!normalized) return false;
+
+    if (normalized === filterKey) return true;
+
+    const aliasSet = new Set([filterKey, ...((categoryAliases[filterKey] || []))]);
+    return aliasSet.has(normalized);
   });
 };
 
