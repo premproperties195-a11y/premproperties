@@ -11,6 +11,7 @@ const normalizeFilterKey = (value: string | null | undefined) => {
         .toLowerCase()
         .replace(/&/g, " and ")
         .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
 };
 
@@ -19,27 +20,42 @@ const buildCategoryMatches = (value: string | null | undefined) => {
     if (!raw) return new Set<string>();
 
     const variants = new Set<string>([raw]);
+
     const compact = raw.replace(/\s+(plots?|houses?|apartments?|villas?|commercial|residential|land|agriculture|agricultural|farmland)$/, "");
     if (compact && compact !== raw) variants.add(compact);
 
-    const aliases: Record<string, string[]> = {
-        "agriculture land": ["agricultural land", "farm land", "farmland", "agri land"],
+    const aliasGroups: Record<string, string[]> = {
+        "agriculture land": ["agricultural land", "farm land", "farmland", "agri land", "agricultural lands", "farm lands"],
         "land": ["plots", "plot", "agriculture land", "agricultural land", "farm land", "farmland", "agri land"],
-        "residential": ["residential plots", "plots", "residential plot"],
-        "commercial": ["commercial plots", "commercial property", "commercial properties", "business property"],
-        "villa": ["villas", "villa"],
+        "residential plots": ["residential plot", "plots", "plot"],
+        "flats and apartments": ["flat and apartment", "flats", "apartment", "apartments", "flat", "apartment homes"],
+        "villas": ["villa"],
+        "commercial properties": ["commercial property", "commercial plots", "commercial plot", "commercial"],
+        "independent houses": ["independent house", "independent homes", "independent home"],
+        "residential": ["residential plots", "residential plot", "plots", "plot"],
+        "commercial": ["commercial plots", "commercial plot", "commercial property", "commercial properties"],
     };
 
-    Object.entries(aliases).forEach(([key, list]) => {
+    Object.entries(aliasGroups).forEach(([key, list]) => {
         if (raw.includes(key) || list.some((alias) => raw.includes(alias))) {
             variants.add(key);
-            list.forEach((alias) => variants.add(alias.replace(/\s+/g, " ")));
+            list.forEach((alias) => variants.add(normalizeFilterKey(alias)));
         }
     });
 
     if (raw.includes(" and ")) {
         variants.add(raw.replace(/\s+and\s+/g, " "));
     }
+
+    const singularized = new Set<string>();
+    Array.from(variants).forEach((item) => {
+        singularized.add(item);
+        if (item.endsWith("ies") && item.length > 4) singularized.add(item.slice(0, -3) + "y");
+        if (item.endsWith("ses") && item.length > 4) singularized.add(item.slice(0, -2));
+        if (item.endsWith("s") && item.length > 3) singularized.add(item.slice(0, -1));
+    });
+
+    Array.from(singularized).forEach((item) => variants.add(item));
 
     return variants;
 };
@@ -65,7 +81,10 @@ const matchesFilter = (project: any, filter: string) => {
 
     return candidateValues.some((value) => {
         const variants = buildCategoryMatches(value);
-        return Array.from(variants).some((variant) => variant === filterKey || filterKey.includes(variant) || variant.includes(filterKey));
+        return Array.from(variants).some((variant) => {
+            if (!variant) return false;
+            return variant === filterKey || filterKey.includes(variant) || variant.includes(filterKey);
+        });
     });
 };
 
