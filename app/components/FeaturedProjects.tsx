@@ -15,6 +15,16 @@ const normalizeFilterKey = (value: string | null | undefined) => {
     .trim();
 };
 
+const categoryAliases: Record<string, string[]> = {
+  "residential plots": ["residential plot", "plots", "plot", "residential"],
+  "flats and apartments": ["flat and apartment", "flats", "flat", "apartments", "apartment"],
+  "villas": ["villa"],
+  "commercial properties": ["commercial property", "commercial properties", "commercial plots", "commercial plot", "commercial"],
+  "independent houses": ["independent house", "independent homes", "independent home"],
+  "agriculture land": ["agricultural land", "farm land", "farmland", "agri land"],
+  "commercial plots": ["commercial plot", "commercial plots", "commercial property", "commercial properties", "commercial"],
+};
+
 const buildCategoryMatches = (value: string | null | undefined) => {
   const raw = normalizeFilterKey(value);
   if (!raw) return new Set<string>();
@@ -23,38 +33,16 @@ const buildCategoryMatches = (value: string | null | undefined) => {
   const compact = raw.replace(/\s+(plots?|houses?|apartments?|villas?|commercial|residential|land|agriculture|agricultural|farmland)$/, "");
   if (compact && compact !== raw) variants.add(compact);
 
-  const aliasGroups: Record<string, string[]> = {
-    "agriculture land": ["agricultural land", "farm land", "farmland", "agri land", "agricultural lands", "farm lands"],
-    "land": ["plots", "plot", "agriculture land", "agricultural land", "farm land", "farmland", "agri land"],
-    "residential plots": ["residential plot", "plots", "plot"],
-    "flats and apartments": ["flat and apartment", "flats", "apartment", "apartments", "flat", "apartment homes"],
-    "villas": ["villa"],
-    "commercial properties": ["commercial property", "commercial plots", "commercial plot", "commercial"],
-    "independent houses": ["independent house", "independent homes", "independent home"],
-    "residential": ["residential plots", "residential plot", "plots", "plot"],
-    "commercial": ["commercial plots", "commercial plot", "commercial property", "commercial properties"],
-  };
-
-  Object.entries(aliasGroups).forEach(([key, list]) => {
-    if (raw.includes(key) || list.some((alias) => raw.includes(alias))) {
+  Object.entries(categoryAliases).forEach(([key, aliases]) => {
+    if (raw === key || aliases.some(alias => raw === alias || raw.includes(alias) || alias.includes(raw))) {
       variants.add(key);
-      list.forEach((alias) => variants.add(normalizeFilterKey(alias)));
+      aliases.forEach(alias => variants.add(normalizeFilterKey(alias)));
     }
   });
 
   if (raw.includes(" and ")) {
     variants.add(raw.replace(/\s+and\s+/g, " "));
   }
-
-  const singularized = new Set<string>();
-  Array.from(variants).forEach((item) => {
-    singularized.add(item);
-    if (item.endsWith("ies") && item.length > 4) singularized.add(item.slice(0, -3) + "y");
-    if (item.endsWith("ses") && item.length > 4) singularized.add(item.slice(0, -2));
-    if (item.endsWith("s") && item.length > 3) singularized.add(item.slice(0, -1));
-  });
-
-  Array.from(singularized).forEach((item) => variants.add(item));
 
   return variants;
 };
@@ -82,7 +70,7 @@ const matchesFilter = (project: any, filter: string) => {
     const variants = buildCategoryMatches(value);
     return Array.from(variants).some((variant) => {
       if (!variant) return false;
-      return variant === filterKey || filterKey.includes(variant) || variant.includes(filterKey);
+      return variant === filterKey || categoryAliases[filterKey]?.some(alias => alias === variant) || filterKey.includes(variant) || variant.includes(filterKey);
     });
   });
 };
