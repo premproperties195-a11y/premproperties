@@ -188,8 +188,13 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
                                                     </h3>
                                                     <p className="text-gray-500 text-sm mb-4">{project.location}</p>
 
-                                                    <div className="flex gap-4 text-sm text-gray-600 mb-6">
-                                                        {project.specs?.beds && <span>{project.specs.beds} Beds</span>}
+                                                    <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-6">
+                                                        {project.specs?.beds !== undefined && project.specs?.beds !== null && project.specs?.beds !== 0 && (
+                                                            <span>{project.specs.beds} Beds</span>
+                                                        )}
+                                                        {project.specs?.baths !== undefined && project.specs?.baths !== null && project.specs?.baths !== 0 && (
+                                                            <span>{project.specs.baths} Baths</span>
+                                                        )}
                                                         {project.specs?.area && <span>• {project.specs.area}</span>}
                                                     </div>
                                                 </div>

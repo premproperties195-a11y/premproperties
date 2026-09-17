@@ -92,7 +92,7 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                 <div className="space-y-8 lg:col-span-2 lg:space-y-12">
 
                     {/* Key Specs */}
-                    <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-100 bg-gray-900 p-4 shadow-sm sm:grid-cols-3 sm:p-6">
+                    <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-100 bg-gray-900 p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
                         <div>
                             <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Price</p>
                             <p className="text-xl md:text-2xl font-bold text-[var(--primary)]">{property.price}</p>
@@ -102,11 +102,12 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                             <p className="text-xl font-bold text-white">{property.category}</p>
                         </div>
                         <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Area</p>
-                            <p className="text-xl font-bold text-white">
-                                {property.specs?.area || "-"}
-                                {property.specs?.area && property.specs?.areaUnit ? ` ${property.specs.areaUnit}` : ""}
-                            </p>
+                            <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Bedrooms</p>
+                            <p className="text-xl font-bold text-white">{property.specs?.beds ?? 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-400 text-xs uppercase tracking-wider font-bold">Bathrooms</p>
+                            <p className="text-xl font-bold text-white">{property.specs?.baths ?? 0}</p>
                         </div>
                     </div>
 
@@ -130,6 +131,24 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
                             ))}
                         </div>
                     </div>
+
+                    {property.specs?.beds !== undefined || property.specs?.baths !== undefined ? (
+                        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                            <h3 className="text-lg font-bold mb-3">Room Details</h3>
+                            <div className="flex flex-wrap gap-4 text-gray-700">
+                                {property.specs?.beds !== undefined && property.specs?.beds !== null && property.specs?.beds !== 0 && (
+                                    <span className="rounded-full bg-white border border-gray-200 px-3 py-1 font-medium">
+                                        {property.specs.beds} Bedrooms
+                                    </span>
+                                )}
+                                {property.specs?.baths !== undefined && property.specs?.baths !== null && property.specs?.baths !== 0 && (
+                                    <span className="rounded-full bg-white border border-gray-200 px-3 py-1 font-medium">
+                                        {property.specs.baths} Bathrooms
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ) : null}
 
                     {/* Gallery Grid */}
                     {galleryImages.length > 0 && (
