@@ -184,6 +184,30 @@ export default function Header({ nav }: { nav?: any[] }) {
                   {item.label}
                 </Link>
               ))}
+              {member ? (
+                <div className="flex flex-col items-center gap-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                    Member: {member.name || member.email}
+                  </span>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-lg font-sans font-bold uppercase tracking-widest text-red-500 hover:text-red-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-xl font-sans font-bold hover:text-[var(--primary)] uppercase tracking-widest"
+                >
+                  Login
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => {
