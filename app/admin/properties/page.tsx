@@ -6,7 +6,15 @@ import { supabase } from "../../lib/supabase";
 
 export default function PropertiesAdmin() {
     const [properties, setProperties] = useState<any[]>([]);
+    const [filteredProperties, setFilteredProperties] = useState<any[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
+    const [activeFilter, setActiveFilter] = useState("All");
     const [loading, setLoading] = useState(true);
+
+    const normalizeCategory = (value: string | null | undefined) => {
+        if (!value) return "";
+        return String(value).trim();
+    };
 
     useEffect(() => {
         fetchProperties();
@@ -14,19 +22,56 @@ export default function PropertiesAdmin() {
 
     const fetchProperties = async () => {
         try {
-            const { data, error } = await supabase
+            const { data: propertyData, error: propertyError } = await supabase
                 .from("properties")
                 .select("*")
                 .order("created_at", { ascending: false });
 
-            if (error) throw error;
-            setProperties(data || []);
+            if (propertyError) throw propertyError;
+
+            const allProperties = propertyData || [];
+            setProperties(allProperties);
+
+            const derivedCategories = Array.from(
+                new Set(
+                    allProperties
+                        .map((p: any) => normalizeCategory(p.category))
+                        .filter(Boolean)
+                )
+            );
+
+            const { data: settingsData, error: settingsError } = await supabase
+                .from("site_content")
+                .select("data")
+                .eq("id", "company")
+                .single();
+
+            if (!settingsError) {
+                const configuredCategories = settingsData?.data?.propertyConfig?.categories || [];
+                const nextCategories = configuredCategories.length
+                    ? Array.from(new Set(configuredCategories.map((cat: string) => String(cat).trim()).filter(Boolean)))
+                    : derivedCategories;
+
+                setCategories(nextCategories);
+            } else {
+                setCategories(derivedCategories);
+            }
         } catch (error) {
             console.error("Failed to fetch properties:", error);
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (activeFilter === "All") {
+            setFilteredProperties(properties);
+            return;
+        }
+
+        const next = properties.filter((property) => normalizeCategory(property.category) === activeFilter);
+        setFilteredProperties(next);
+    }, [properties, activeFilter]);
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this property?")) return;
@@ -64,6 +109,30 @@ export default function PropertiesAdmin() {
                 </Link>
             </div>
 
+            <div className="mb-6 flex flex-wrap gap-3">
+                <button
+                    onClick={() => setActiveFilter("All")}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${activeFilter === "All"
+                        ? "bg-black text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                >
+                    All
+                </button>
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        onClick={() => setActiveFilter(category)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${activeFilter === category
+                            ? "bg-[var(--primary)] text-black"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[780px]">
@@ -78,7 +147,7 @@ export default function PropertiesAdmin() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {properties.map((property: any) => (
+                        {filteredProperties.map((property: any) => (
                             <tr key={property.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
@@ -119,9 +188,9 @@ export default function PropertiesAdmin() {
                     </table>
                 </div>
 
-                {properties.length === 0 && (
+                {filteredProperties.length === 0 && (
                     <div className="text-center py-12 text-gray-500">
-                        No properties found. Add your first property!
+                        No properties found for this category.
                     </div>
                 )}
             </div>
