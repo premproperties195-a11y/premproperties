@@ -43,7 +43,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
         rent_frequency: "Month",
         documents: [] as string[], // New field for original papers
     });
-    const [categories, setCategories] = useState<string[]>(["Residential", "Commercial", "Villa", "Land", "Agriculture Land"]);
+    const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
         fetchSettings();
@@ -234,10 +234,10 @@ export default function PropertyEditClient({ id }: { id: string }) {
                 </h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 md:p-8">
+                <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                     {/* Basic Info */}
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Title *</label>
                         <input
                             type="text"
@@ -248,7 +248,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         />
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Location *</label>
                         <input
                             type="text"
@@ -259,11 +259,11 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         />
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">
                             {formData.type === "Buy" ? "Price *" : "Rent/Lease Amount *"}
                         </label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                             <input
                                 type="text"
                                 value={formData.price}
@@ -285,7 +285,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </div>
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Type *</label>
                         <select
                             value={formData.type}
@@ -298,7 +298,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </select>
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Category *</label>
                         <select
                             value={formData.category}
@@ -311,7 +311,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </select>
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Status *</label>
                         <select
                             value={formData.status}
@@ -325,9 +325,9 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </select>
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Main Image URL *</label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                             <input
                                 type="url"
                                 value={formData.image}
@@ -343,9 +343,9 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </div>
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Layout Image URL</label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                             <input
                                 type="url"
                                 value={formData.layout_image}
@@ -376,7 +376,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </div>
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Map Address</label>
                         <input
                             type="text"
@@ -385,18 +385,20 @@ export default function PropertyEditClient({ id }: { id: string }) {
                             placeholder="Full address for Google Maps"
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none mb-4"
                         />
-                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <div className="bg-gray-50 p-3 sm:p-4 rounded-xl border border-gray-200">
                             <label className="block text-sm font-bold text-gray-700 mb-3">📍 Pin Exact Location</label>
-                            <MapPicker
-                                lat={formData.latitude}
-                                lng={formData.longitude}
-                                address={formData.map_address}
-                                onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
-                            />
+                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                                <MapPicker
+                                    lat={formData.latitude}
+                                    lng={formData.longitude}
+                                    address={formData.map_address}
+                                    onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Description *</label>
                         <textarea
                             value={formData.description}
@@ -408,10 +410,10 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     </div>
 
                     {/* Gallery Images */}
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Gallery Images</label>
                         {formData.images.map((img, index) => (
-                            <div key={index} className="flex gap-2 mb-2">
+                            <div key={index} className="flex flex-col gap-2 mb-2 sm:flex-row">
                                 <input
                                     type="url"
                                     value={img}
@@ -419,21 +421,23 @@ export default function PropertyEditClient({ id }: { id: string }) {
                                     placeholder="https://..."
                                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
                                 />
-                                <CloudinaryUpload
-                                    onUploadSuccess={(url) => handleArrayChange("images", index, url)}
-                                    buttonText="📸"
-                                    buttonClass="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => removeArrayItem("images", index)}
-                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                >
-                                    Remove
-                                </button>
+                                <div className="flex gap-2">
+                                    <CloudinaryUpload
+                                        onUploadSuccess={(url) => handleArrayChange("images", index, url)}
+                                        buttonText="📸"
+                                        buttonClass="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeArrayItem("images", index)}
+                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         ))}
-                        <div className="flex gap-4 mt-2">
+                        <div className="flex flex-col gap-3 mt-2 sm:flex-row sm:flex-wrap">
                             <button
                                 type="button"
                                 onClick={() => addArrayItem("images")}
@@ -454,10 +458,10 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     </div>
 
                     {/* Amenities */}
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Amenities</label>
                         {formData.amenities.map((amenity, index) => (
-                            <div key={index} className="flex gap-2 mb-2">
+                            <div key={index} className="flex flex-col gap-2 mb-2 sm:flex-row">
                                 <input
                                     type="text"
                                     value={amenity}
@@ -484,9 +488,9 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     </div>
 
                     {/* Specs */}
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Area</label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row">
                             <input
                                 type="text"
                                 value={formData.specs.area}
@@ -506,7 +510,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         </div>
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Bedrooms</label>
                         <input
                             type="number"
@@ -516,7 +520,7 @@ export default function PropertyEditClient({ id }: { id: string }) {
                         />
                     </div>
 
-                    <div>
+                    <div className="sm:col-span-1">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Bathrooms</label>
                         <input
                             type="number"
@@ -527,11 +531,11 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     </div>
 
                     {/* Property Documents */}
-                    <div className="md:col-span-2">
+                    <div className="sm:col-span-2">
                         <label className="block text-sm font-bold text-gray-700 mb-2">Original Papers / Documents (Member Only)</label>
                         <p className="text-xs text-gray-500 mb-4 italic">These documents will only be visible to logged-in members on the website.</p>
                         {formData.documents?.map((doc, index) => (
-                            <div key={index} className="flex gap-2 mb-2">
+                            <div key={index} className="flex flex-col gap-2 mb-2 sm:flex-row">
                                 <input
                                     type="url"
                                     value={doc}
@@ -539,22 +543,24 @@ export default function PropertyEditClient({ id }: { id: string }) {
                                     placeholder="https://... (PDF or Image URL)"
                                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
                                 />
-                                <CloudinaryUpload
-                                    onUploadSuccess={(url) => handleArrayChange("documents", index, url)}
-                                    buttonText="📄"
-                                    buttonClass="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                                    resourceType="raw"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => removeArrayItem("documents", index)}
-                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                >
-                                    Remove
-                                </button>
+                                <div className="flex gap-2">
+                                    <CloudinaryUpload
+                                        onUploadSuccess={(url) => handleArrayChange("documents", index, url)}
+                                        buttonText="📄"
+                                        buttonClass="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                        resourceType="raw"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeArrayItem("documents", index)}
+                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         ))}
-                        <div className="flex gap-4 mt-2">
+                        <div className="flex flex-col gap-3 mt-2 sm:flex-row sm:flex-wrap">
                             <button
                                 type="button"
                                 onClick={() => addArrayItem("documents")}
@@ -576,17 +582,17 @@ export default function PropertyEditClient({ id }: { id: string }) {
                     </div>
                 </div>
 
-                <div className="mt-8 flex gap-4">
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+                        className="w-full sm:w-auto px-8 py-3 bg-[var(--primary)] text-black font-bold rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50"
                     >
                         {saving ? "Saving..." : "Save Property"}
                     </button>
                     <Link
                         href="/admin/properties"
-                        className="px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition-colors"
+                        className="w-full sm:w-auto px-8 py-3 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition-colors text-center"
                     >
                         Cancel
                     </Link>

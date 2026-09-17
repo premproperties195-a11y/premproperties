@@ -72,7 +72,7 @@ const matchesFilter = (project: any, filter: string) => {
 export default function PropertiesGrid({ properties: initialProperties }: { properties: any[] }) {
     const [properties, setProperties] = useState<any[]>(Array.isArray(initialProperties) ? initialProperties : []);
     const [activeFilter, setActiveFilter] = useState("All");
-    const [categories, setCategories] = useState<string[]>(["Residential", "Commercial", "Villa", "Land", "Agriculture Land"]);
+    const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,9 +81,20 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (propData && !propError) {
-                setProperties(propData.map((p: any) => ({ ...p, id: String(p.id) })));
+            const normalizedProperties = Array.isArray(propData) ? propData.map((p: any) => ({ ...p, id: String(p.id) })) : [];
+
+            if (normalizedProperties.length || !propError) {
+                setProperties(normalizedProperties);
             }
+
+            const derivedCategories = Array.from(
+                new Set(
+                    normalizedProperties
+                        .map((p: any) => p.category || p.property_type || p.type)
+                        .filter((value: string | undefined) => typeof value === "string" && value.trim().length > 0)
+                        .map((value: string) => value.trim())
+                )
+            );
 
             const { data: settingsData } = await supabase
                 .from("site_content")
@@ -92,9 +103,11 @@ export default function PropertiesGrid({ properties: initialProperties }: { prop
                 .single();
 
             const configuredCategories = settingsData?.data?.propertyConfig?.categories;
-            if (Array.isArray(configuredCategories) && configuredCategories.some(Boolean)) {
-                setCategories(Array.from(new Set(configuredCategories.map((item: string) => String(item).trim()).filter(Boolean))));
-            }
+            const nextCategories = Array.isArray(configuredCategories) && configuredCategories.some(Boolean)
+                ? Array.from(new Set(configuredCategories.map((item: string) => String(item).trim()).filter(Boolean)))
+                : derivedCategories;
+
+            setCategories(nextCategories);
         };
 
         if (!Array.isArray(initialProperties) || initialProperties.length === 0) {
