@@ -8,15 +8,58 @@ type RichTextEditorProps = {
   placeholder?: string;
 };
 
+const normalizeRichText = (input: string) => {
+  if (!input || typeof input !== "string") return "";
+
+  const trimmed = input.trim();
+  if (!trimmed) return "";
+
+  if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  const normalized = trimmed
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      if (/^(?:[-*•]\s+)/.test(line)) {
+        return `<li>${line.replace(/^(?:[-*•]\s+)/, "")}</li>`;
+      }
+
+      if (/^\d+[.)]\s+/.test(line)) {
+        return `<li>${line.replace(/^\d+[.)]\s+/, "")}</li>`;
+      }
+
+      return `<p>${line}</p>`;
+    })
+    .join("");
+
+  const withListGroups = normalized.replace(/(<li>.*?<\/li>)(?!.*<li>)/gs, "$1");
+
+  const finalHtml = withListGroups
+    .replace(/<p><li>/g, "<li>")
+    .replace(/<\/li><\/p>/g, "</li>")
+    .replace(/(<li>.*?<\/li>)/gs, "$1")
+    .replace(/(<p>.*?<\/p>)(?=(?:<li>|$))/gs, "$1");
+
+  return finalHtml.includes("<li>")
+    ? finalHtml.replace(/((?:<li>.*?<\/li>\s*)+)/gs, (match) => `<ul>${match}</ul>`)
+    : finalHtml;
+};
+
 export default function RichTextEditor({ value, onChange, placeholder = "Write a description..." }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!editorRef.current) return;
 
+    const normalizedValue = normalizeRichText(value);
     const currentValue = editorRef.current.innerHTML;
-    if (currentValue !== value) {
-      editorRef.current.innerHTML = value || "";
+    if (currentValue !== normalizedValue) {
+      editorRef.current.innerHTML = normalizedValue || "";
     }
   }, [value]);
 

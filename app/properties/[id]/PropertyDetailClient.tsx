@@ -64,8 +64,33 @@ export default function PropertyDetailClient({ initialProperty }: { initialPrope
     const galleryImages = Array.isArray(property?.images) ? property.images.filter((img: any) => img && img.trim() !== "") : [];
     const layoutImage = property?.layout_image || property?.layoutImage || property?.specs?.layout_image || property?.specs?.layoutImage;
     const hasLayoutImage = typeof layoutImage === "string" ? layoutImage.trim() !== "" : Boolean(layoutImage);
+
+    const normalizeDescriptionHtml = (input: string) => {
+        if (!input || typeof input !== "string") return "";
+        const trimmed = input.trim();
+        if (!trimmed) return "";
+        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+            return trimmed;
+        }
+
+        return trimmed
+            .replace(/\r\n/g, "\n")
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .map((line) => {
+                if (/^(?:[-*•]\s+)/.test(line)) return `<li>${line.replace(/^(?:[-*•]\s+)/, "")}</li>`;
+                if (/^\d+[.)]\s+/.test(line)) return `<li>${line.replace(/^\d+[.)]\s+/, "")}</li>`;
+                return `<p>${line}</p>`;
+            })
+            .join("")
+            .replace(/(<li>.*?<\/li>)/gs, (match) => `<ul>${match}</ul>`)
+            .replace(/<\/ul><ul>/g, "")
+            .replace(/<p><\/p>/g, "");
+    };
+
     const sanitizedDescription = typeof property?.description === "string"
-        ? DOMPurify.sanitize(property.description, { USE_PROFILES: { html: true } })
+        ? DOMPurify.sanitize(normalizeDescriptionHtml(property.description), { USE_PROFILES: { html: true } })
         : "";
 
     return (
